@@ -140,8 +140,7 @@ public enum Images {
 	/** Clipboard symbol */
 	IMG_CLIPBOARD,
 	/** Arrow right */
-	IMG_NEXT,
-	IMG_NEXT_WO_SHADOW,
+	IMG_NEXT, IMG_NEXT_WO_SHADOW,
 	/** Arrow left */
 	IMG_PREVIOUS,
 	/** Arrow up */
@@ -151,9 +150,7 @@ public enum Images {
 	/** Arrow down to rectangle */
 	IMG_ARROWDOWNTORECT,
 	/** Arrow to stop */
-	IMG_ARROWSTOP,
-	IMG_ARROWSTOP_WO_SHADOW,
-	IMG_EYE_WO_SHADOW,
+	IMG_ARROWSTOP, IMG_ARROWSTOP_WO_SHADOW, IMG_EYE_WO_SHADOW,
 	/** undo */
 	IMG_UNDO,
 	/** a 8px pencil symbol */
@@ -325,8 +322,10 @@ public enum Images {
 	/**
 	 * Return a resized (software scaled) version of an image, image will not be e
 	 * 
-	 * @param image the image to resize
-	 * @param is the target {@link ImageSize}
+	 * @param image
+	 *            the image to resize
+	 * @param is
+	 *            the target {@link ImageSize}
 	 * @return
 	 */
 	public static Image resize(Image image, ImageSize is){
@@ -336,12 +335,13 @@ public enum Images {
 	/**
 	 * Return a resized (software scaled) version of an image, image will not be disposed
 	 * 
-	 * @param image the image to resize
+	 * @param image
+	 *            the image to resize
 	 * @param width
 	 * @param height
 	 * @return
 	 */
-	public static Image resize(Image image, int width, int height){	
+	public static Image resize(Image image, int width, int height){
 		return new Image(Display.getDefault(), image.getImageData().scaledTo(width, height));
 	}
 	

@@ -199,7 +199,7 @@ public class Anwender extends Person {
 		
 		admin.setExtInfoStoredObjectByKey(FLD_EXTINFO_PASSWORD, "admin");
 		admin.setExtInfoStoredObjectByKey(FLD_EXTINFO_GROUPS, "Admin,Anwender");
-
+		
 		CoreHub.acl.grant("Admin", new ACE(ACE.ACE_IMPLICIT, "ReadUsrPwd"), new ACE(
 			ACE.ACE_IMPLICIT, "WriteUsrPwd"), new ACE(ACE.ACE_IMPLICIT, "CreateAndDelete"),
 			new ACE(ACE.ACE_IMPLICIT, "WriteGroups"));

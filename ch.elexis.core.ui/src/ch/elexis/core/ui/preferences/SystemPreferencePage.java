@@ -19,6 +19,7 @@ public class SystemPreferencePage extends PreferencePage implements IWorkbenchPr
 	
 	/**
 	 * Create contents of the preference page.
+	 * 
 	 * @param parent
 	 */
 	@Override
@@ -27,8 +28,10 @@ public class SystemPreferencePage extends PreferencePage implements IWorkbenchPr
 		container.setLayout(new GridLayout(1, false));
 		
 		Label lblDieseKategorieBeinhaltet = new Label(container, SWT.NONE);
-		lblDieseKategorieBeinhaltet.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		lblDieseKategorieBeinhaltet.setText("Diese Kategorie beinhaltet system-bezogene Einstellungen.");
+		lblDieseKategorieBeinhaltet.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,
+			1, 1));
+		lblDieseKategorieBeinhaltet
+			.setText("Diese Kategorie beinhaltet system-bezogene Einstellungen.");
 		
 		return container;
 	}

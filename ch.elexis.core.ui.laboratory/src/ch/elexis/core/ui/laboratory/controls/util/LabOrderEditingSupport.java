@@ -29,7 +29,7 @@ import ch.rgw.tools.TimeTool;
 public class LabOrderEditingSupport extends EditingSupport {
 	protected final String SMALLER = "<";
 	protected final String BIGGER = ">";
-
+	
 	protected TextCellEditor textCellEditor;
 	protected TreeViewerFocusCellManager focusCell;
 	
@@ -71,7 +71,7 @@ public class LabOrderEditingSupport extends EditingSupport {
 	protected void setUpCellEditor(TreeViewer viewer){
 		// set up validation of the cell editors
 		textCellEditor = new TextCellEditor(viewer.getTree());
-
+		
 		textCellEditor.addListener(new ICellEditorListener() {
 			@Override
 			public void editorValueChanged(boolean oldValidState, boolean newValidState){
@@ -114,15 +114,15 @@ public class LabOrderEditingSupport extends EditingSupport {
 			};
 		
 		TreeViewerEditor.create(viewer, focusCell, actSupport, ColumnViewerEditor.TABBING_VERTICAL
-				| ColumnViewerEditor.KEYBOARD_ACTIVATION);
+			| ColumnViewerEditor.KEYBOARD_ACTIVATION);
 	}
-
+	
 	@Override
 	protected boolean canEdit(Object element){
 		return (element instanceof LabOrder)
 			&& (((LabOrder) element).getLabItem().getTyp() != typ.FORMULA);
 	}
-
+	
 	@Override
 	protected CellEditor getCellEditor(Object element){
 		if (element instanceof LabOrder) {
@@ -185,7 +185,7 @@ public class LabOrderEditingSupport extends EditingSupport {
 			}
 		}
 	}
-
+	
 	private LabResult createResult(LabOrder order, Kontakt origin){
 		LabResult result = order.createResult(origin);
 		result.setTransmissionTime(new TimeTool());

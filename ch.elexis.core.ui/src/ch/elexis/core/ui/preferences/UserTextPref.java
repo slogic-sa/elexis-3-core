@@ -43,7 +43,7 @@ public class UserTextPref extends FieldEditorPreferencePage implements IWorkbenc
 	};
 	
 	private HashMap<String, String> makros = new HashMap<String, String>();
-
+	
 	public UserTextPref(){
 		super(GRID);
 		setPreferenceStore(new SettingsPreferenceStore(CoreHub.userCfg));
@@ -70,7 +70,7 @@ public class UserTextPref extends FieldEditorPreferencePage implements IWorkbenc
 		}
 		
 		setMakroEnabledDefaults();
-
+		
 		List<IConfigurationElement> makroExtensions =
 			Extensions.getExtensions(ExtensionPointConstantsUi.KONSEXTENSION);
 		for (IConfigurationElement iConfigurationElement : makroExtensions) {
@@ -106,7 +106,7 @@ public class UserTextPref extends FieldEditorPreferencePage implements IWorkbenc
 			}
 		}
 	}
-
+	
 	@Override
 	protected void performDefaults(){
 		this.initialize();

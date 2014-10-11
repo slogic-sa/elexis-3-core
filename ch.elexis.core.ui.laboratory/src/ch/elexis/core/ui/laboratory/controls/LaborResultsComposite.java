@@ -53,7 +53,7 @@ public class LaborResultsComposite extends Composite {
 	
 	private TreeViewerColumn newColumn;
 	private int newColumnIndex;
-
+	
 	public final static String COLUMN_DATE_KEY = "labresult.date"; //$NON-NLS-1$
 	private List<TreeViewerColumn> resultColumns = new ArrayList<TreeViewerColumn>();
 	
@@ -183,7 +183,7 @@ public class LaborResultsComposite extends Composite {
 		newColumn.setLabelProvider(new LaborResultsLabelProvider(newColumn));
 		newColumn.setEditingSupport(new LabResultEditingSupport(this, viewer, newColumn));
 		newColumnIndex = 2;
-
+		
 		for (int i = 0; i < COLUMNS_PER_PAGE; i++) {
 			column = new TreeViewerColumn(viewer, SWT.NONE);
 			column.getColumn().setWidth(75);

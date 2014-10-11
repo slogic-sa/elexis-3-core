@@ -13,13 +13,13 @@ public class ChangeNewDateSelection extends SelectionAdapter {
 	
 	private TreeViewerColumn column;
 	private LaborResultsComposite composite;
-
+	
 	public ChangeNewDateSelection(TreeViewerColumn column,
 		LaborResultsComposite laborResultsComposite){
 		this.column = column;
 		this.composite = laborResultsComposite;
 	}
-
+	
 	@Override
 	public void widgetSelected(SelectionEvent e){
 		TimeTool date =

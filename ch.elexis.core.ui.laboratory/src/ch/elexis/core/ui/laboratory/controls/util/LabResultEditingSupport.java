@@ -24,7 +24,7 @@ public class LabResultEditingSupport extends LabOrderEditingSupport {
 	
 	private TreeViewerColumn column;
 	private LaborResultsComposite composite;
-
+	
 	public LabResultEditingSupport(LaborResultsComposite laborResultsComposite, TreeViewer viewer,
 		TreeViewerColumn column){
 		super(viewer);
@@ -60,12 +60,12 @@ public class LabResultEditingSupport extends LabOrderEditingSupport {
 			}
 		});
 	}
-
+	
 	@Override
 	protected boolean canEdit(Object element){
 		return element instanceof LaborItemResults;
 	}
-
+	
 	@Override
 	protected CellEditor getCellEditor(Object element){
 		if (element instanceof LaborItemResults) {
@@ -84,10 +84,10 @@ public class LabResultEditingSupport extends LabOrderEditingSupport {
 		return ""; //$NON-NLS-1$
 	}
 	
-	private TimeTool getDate() {
+	private TimeTool getDate(){
 		return (TimeTool) column.getColumn().getData(LaborResultsComposite.COLUMN_DATE_KEY);
 	}
-
+	
 	@Override
 	protected void setValue(Object element, Object value){
 		if (element instanceof LaborItemResults && value != null) {
@@ -114,7 +114,7 @@ public class LabResultEditingSupport extends LabOrderEditingSupport {
 			}
 		}
 	}
-
+	
 	private LabResult createResult(LabItem item, Kontakt origin){
 		TimeTool now = new TimeTool();
 		LabOrder order =

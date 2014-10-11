@@ -25,7 +25,7 @@ public class DisplayDoubleClickListener implements IDoubleClickListener {
 	public DisplayDoubleClickListener(LaborResultsComposite composite){
 		this.composite = composite;
 	}
-
+	
 	@Override
 	public void doubleClick(DoubleClickEvent event){
 		List<LabResult> results = composite.getSelectedResults();

@@ -19,7 +19,7 @@ public class LaborItemResults implements Comparable<LaborItemResults> {
 	public LabItem getLabItem(){
 		return getFirstResult().getItem();
 	}
-
+	
 	public String getItem(){
 		return item;
 	}

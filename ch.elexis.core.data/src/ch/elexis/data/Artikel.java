@@ -358,7 +358,7 @@ public class Artikel extends VerrechenbarAdapter {
 		return checkZero(getExt(ANBRUCH));
 	}
 	
-	public void setBruchteile(int number) {
+	public void setBruchteile(int number){
 		setExt(ANBRUCH, Integer.toString(number));
 	}
 	
@@ -518,7 +518,7 @@ public class Artikel extends VerrechenbarAdapter {
 		return checkZero((String) getExtInfoStoredObjectByKey(VERPACKUNGSEINHEIT));
 	}
 	
-	public void setVerpackungsEinheit(int ve) {
+	public void setVerpackungsEinheit(int ve){
 		setExt(VERPACKUNGSEINHEIT, Integer.toString(ve));
 	}
 	
@@ -526,7 +526,7 @@ public class Artikel extends VerrechenbarAdapter {
 		return checkZero(getExt(VERKAUFSEINHEIT));
 	}
 	
-	public void setVerkaufseinheit(int number) {
+	public void setVerkaufseinheit(int number){
 		setExt(VERKAUFSEINHEIT, Integer.toString(number));
 	}
 	

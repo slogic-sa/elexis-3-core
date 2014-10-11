@@ -18,7 +18,7 @@ public class LaborOrdersContentProvider implements ITreeContentProvider {
 	private State[] roots = {
 		State.ORDERED, State.DONE
 	};
-
+	
 	@Override
 	public void dispose(){
 		// TODO Auto-generated method stub

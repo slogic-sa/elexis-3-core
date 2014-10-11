@@ -113,7 +113,7 @@ public class LaborblattView extends ViewPart implements ICallback {
 		}
 		return false;
 	}
-
+	
 	public boolean createLaborblatt(final Patient pat, final String[] header, final TableItem[] rows){
 		Brief br =
 			text.createFromTemplateName(Konsultation.getAktuelleKons(),

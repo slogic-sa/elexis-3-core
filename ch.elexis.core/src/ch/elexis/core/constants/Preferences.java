@@ -96,6 +96,8 @@ public class Preferences {
 	public static final String USR_REMINDEROWN = "reminder/originator"; //$NON-NLS-1$
 	public static final String USR_REMINDEROTHERS = "reminder/others"; //$NON-NLS-1$
 	public static final String USR_SHOWPATCHGREMINDER = "reminder/showPatientChangeReminder"; //$NON-NLS-1$
+	public static final String USR_REMINDER_PAT_LABEL_CHOOSEN = "reminder/patientlabel/choosen";
+	public static final String USR_REMINDER_PAT_LABEL_AVAILABLE = "reminder/patientlabel/available";
 	public static final String USR_MFU_LIST_SIZE = "mfulist/size"; //$NON-NLS-1$
 	public static final String USR_PLAF = "anwender/plaf"; //$NON-NLS-1$
 	public static final String USR_DEFAULTFONT = "anwender/stdfont"; //$NON-NLS-1$
@@ -106,6 +108,9 @@ public class Preferences {
 	public static final String USR_PATLIST_SHOWDOB = "anwender/patlist/zeigegebdat"; //$NON-NLS-1$
 	public static final String USR_PATLIST_FOCUSFIELD = "anwender/patlist/focusfield"; //$NON-NLS-1$
 	public static final String USR_MANDATOR_COLORS_PREFIX = "mandanten/farben/";
+	public static final String USR_MESSAGES_SOUND_ON = "messages/playsound";
+	public static final String USR_MESSAGES_SOUND_PATH = "messages/soundpath";
+	public static final String USR_MESSAGES_ANSWER_AUTOCLEAR = "messages/answer/autoclear";
 	
 	// Menu item "lock perspectives" (GlobalActions.fixLayoutAction)
 	public static final String USR_FIX_LAYOUT = "perspectives/fix_layout"; //$NON-NLS-1$

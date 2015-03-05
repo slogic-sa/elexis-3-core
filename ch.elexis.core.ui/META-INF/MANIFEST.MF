@@ -22,10 +22,12 @@ Require-Bundle: org.eclipse.core.runtime,
  ch.elexis.core;bundle-version="3.0.0",
  ch.elexis.core.data;bundle-version="3.0.0",
  ch.elexis.core.ui.icons;bundle-version="3.0.0",
- ch.qos.logback.classic
+ ch.qos.logback.classic,
+ org.aspectj.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Export-Package: ch.elexis.core.ui,
+Export-Package: ch.elexis.core.performance,
+ ch.elexis.core.ui,
  ch.elexis.core.ui.actions,
  ch.elexis.core.ui.commands,
  ch.elexis.core.ui.commands.sourceprovider,

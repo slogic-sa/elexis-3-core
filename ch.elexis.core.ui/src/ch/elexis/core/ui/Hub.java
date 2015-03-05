@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.data.activator.CoreHub;
 import ch.elexis.core.data.events.ElexisEventDispatcher;
+import ch.elexis.core.data.events.IElexisPerformanceAnalyzer;
 import ch.elexis.core.data.interfaces.ShutdownJob;
 import ch.elexis.core.data.interfaces.scripting.Interpreter;
 import ch.elexis.core.ui.actions.GlobalActions;
@@ -100,7 +101,12 @@ public class Hub extends AbstractUIPlugin {
 		log.debug("Stopping " + this.getClass().getName());
 		
 		ElexisEventDispatcher.getInstance().removeListeners(eeli_pat);
-		
+		boolean analyze = Boolean.parseBoolean(System.getProperty("performanceAnalysis"));
+		if (analyze) {
+			IElexisPerformanceAnalyzer performanceAnalyzer =
+				ElexisEventDispatcher.getInstance().getPerformanceAnalyzer();
+			performanceAnalyzer.writePerformanceStatisticsLog();
+		}
 		super.stop(context);
 	}
 	

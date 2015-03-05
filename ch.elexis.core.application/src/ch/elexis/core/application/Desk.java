@@ -22,9 +22,11 @@ import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.application.advisors.ApplicationWorkbenchAdvisor;
 import ch.elexis.core.data.activator.CoreHub;
+import ch.elexis.core.data.events.ElexisEventDispatcher;
 import ch.elexis.core.data.extension.AbstractCoreOperationAdvisor;
 import ch.elexis.core.data.extension.CoreOperationExtensionPoint;
 import ch.elexis.core.data.preferences.CorePreferenceInitializer;
+import ch.elexis.core.performance.ElexisPerformanceAnalysis;
 import ch.elexis.core.ui.UiDesk;
 import ch.elexis.data.PersistentObject;
 import ch.rgw.io.FileTool;
@@ -58,10 +60,10 @@ public class Desk implements IApplication {
 			Shell shell = PlatformUI.createDisplay().getActiveShell();
 			StringBuilder sb = new StringBuilder();
 			sb.append("Could not open database connection. Quitting Elexis.\n\n");
-			sb.append("Message: " + pe.getMessage()+"\n\n");
+			sb.append("Message: " + pe.getMessage() + "\n\n");
 			while (pe.getCause() != null) {
 				pe = pe.getCause();
-				sb.append("Reason: "+pe.getMessage()+"\n");
+				sb.append("Reason: " + pe.getMessage() + "\n");
 			}
 			MessageDialog.openError(shell, "Error in database connection", sb.toString());
 			
@@ -75,6 +77,12 @@ public class Desk implements IApplication {
 			FileTool.deltree(p);
 			CoreHub.localCfg.clear();
 			CoreHub.localCfg.flush();
+		}
+		
+		boolean analyze = Boolean.parseBoolean(System.getProperty("performanceAnalysis"));
+		if (analyze) {
+			ElexisEventDispatcher.getInstance().addPerformanceAnalyzer(
+				new ElexisPerformanceAnalysis());
 		}
 		
 		// care for log-in

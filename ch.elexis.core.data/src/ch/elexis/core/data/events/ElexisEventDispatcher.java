@@ -56,6 +56,7 @@ import ch.elexis.data.PersistentObject;
 public final class ElexisEventDispatcher extends Job {
 	private final List<ElexisEventListener> listeners;
 	private static ElexisEventDispatcher theInstance;
+	private static IElexisPerformanceAnalyzer analyzer;
 	private final Map<Class<?>, IElexisEventDispatcher> dispatchers;
 	private final PriorityQueue<ElexisEvent> eventQueue;
 	private final ArrayList<ElexisEvent> eventCopy;
@@ -147,6 +148,7 @@ public final class ElexisEventDispatcher extends Job {
 				} else {
 					listeners.add(el);
 				}
+				addPerformanceAnalyzerEntry(el.toString(), el.getClass(), cl);
 			}
 		}
 	}
@@ -169,6 +171,7 @@ public final class ElexisEventDispatcher extends Job {
 				} else {
 					listeners.remove(el);
 				}
+				removePerformanceAnalyzerEntry(el.toString());
 			}
 		}
 	}
@@ -198,6 +201,7 @@ public final class ElexisEventDispatcher extends Job {
 	 *            the event to fire.
 	 */
 	public void fire(final ElexisEvent... ees){
+		long start = System.currentTimeMillis();
 		for (ElexisEvent ee : ees) {
 			// Those are single events
 			if (ee.getPriority() == ElexisEvent.PRIORITY_SYNC
@@ -224,13 +228,18 @@ public final class ElexisEventDispatcher extends Job {
 					synchronized (eventQueue) {
 						eventQueue.offer(elexisEvent);
 					}
-					
 				}
+				long end = System.currentTimeMillis();
+				addEventFireTime(ee.getObjectClass(), ee.getType(), (end - start));
 				continue;
 			} else if (eventType == ElexisEvent.EVENT_MANDATOR_CHANGED) {
 				elexisUIContext.setSelection(Mandant.class, ee.getObject());
+				long end = System.currentTimeMillis();
+				addEventFireTime(ee.getObjectClass(), ee.getType(), (end - start));
 			} else if (eventType == ElexisEvent.EVENT_USER_CHANGED) {
 				elexisUIContext.setSelection(Anwender.class, ee.getObject());
+				long end = System.currentTimeMillis();
+				addEventFireTime(ee.getObjectClass(), ee.getType(), (end - start));
 			}
 			
 			IElexisEventDispatcher ied = dispatchers.get(ee.getObjectClass());
@@ -345,7 +354,7 @@ public final class ElexisEventDispatcher extends Job {
 	 * @return the currently selected {@link Mandant}
 	 * @since 3.1
 	 */
-	public @Nullable static Mandant getSelectedMandator() {
+	public @Nullable static Mandant getSelectedMandator(){
 		return (Mandant) getSelected(Mandant.class);
 	}
 	
@@ -372,12 +381,14 @@ public final class ElexisEventDispatcher extends Job {
 		if (!bStop) {
 			this.schedule(30);
 		}
+		
 		return Status.OK_STATUS;
 	}
 	
 	private void doDispatch(final ElexisEvent ee){
 		if (ee != null) {
 			synchronized (listeners) {
+				addEventCall(ee.getObjectClass(), ee.getType(), ee.getPriority());
 				for (final ElexisEventListener l : listeners) {
 					if (ee.matches(l.getElexisEventFilter())) {
 						l.catchElexisEvent(ee);
@@ -425,5 +436,38 @@ public final class ElexisEventDispatcher extends Job {
 		}
 		sb.append("\n--------------\n");
 		log.debug(sb.toString());
+	}
+	
+	public void addPerformanceAnalyzer(IElexisPerformanceAnalyzer analyzer){
+		this.analyzer = analyzer;
+	}
+	
+	private void addPerformanceAnalyzerEntry(String listenerId, Class<?> uiClass,
+		Class<?> objectClass){
+		if (analyzer != null) {
+			analyzer.addListener(listenerId, uiClass, objectClass);
+		}
+	}
+	
+	private void removePerformanceAnalyzerEntry(String listenerId){
+		if (analyzer != null) {
+			analyzer.removeListener(listenerId);
+		}
+	}
+	
+	private void addEventCall(Class<?> objectClass, int type, int priority){
+		if (analyzer != null) {
+			analyzer.addEventCall(objectClass, type, priority);
+		}
+	}
+	
+	private void addEventFireTime(Class<?> objectClass, int type, long time){
+		if (analyzer != null) {
+			analyzer.addEventFireTime(objectClass, type, time);
+		}
+	}
+	
+	public IElexisPerformanceAnalyzer getPerformanceAnalyzer(){
+		return analyzer;
 	}
 }

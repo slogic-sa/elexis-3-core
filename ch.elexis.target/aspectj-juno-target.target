@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde?>
 <!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
-<target name="Juno for Elexis 3.0" sequenceNumber="1425560391">
+<target name="Juno for Elexis 3.0" sequenceNumber="1425573475">
   <locations>
+    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.aspectj.runtime" version="1.7.3.20130613144500-a"/>
+      <unit id="org.aspectj.weaver" version="1.7.3.20130613144500-a"/>
+      <unit id="org.eclipse.equinox.weaving.aspectj" version="1.0.300.I20130319-1000"/>
+      <unit id="org.eclipse.equinox.weaving.caching" version="1.0.200.I20130319-1000"/>
+      <unit id="org.eclipse.equinox.weaving.hook" version="1.0.200.I20130319-1000"/>
+      <repository location="http://download.eclipse.org/tools/ajdt/42/update"/>
+    </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ca.odell.glazedlists" version="1.9.0.v201303080712"/>
       <unit id="org.apache.xml.resolver" version="1.2.0.v201005080400"/>
@@ -17,14 +25,6 @@
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="edu.emory.mathcs.backport" version="3.1.0.v200902251154"/>
       <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/"/>
-    </location>
-    <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
-      <unit id="org.aspectj.runtime" version="1.7.3.20130613144500-a"/>
-      <unit id="org.aspectj.weaver" version="1.7.3.20130613144500-a"/>
-      <unit id="org.eclipse.equinox.weaving.aspectj" version="1.0.300.I20130319-1000"/>
-      <unit id="org.eclipse.equinox.weaving.caching" version="1.0.200.I20130319-1000"/>
-      <unit id="org.eclipse.equinox.weaving.hook" version="1.0.200.I20130319-1000"/>
-      <repository location="http://download.eclipse.org/tools/ajdt/43/update"/>
     </location>
     <location includeMode="slicer" includeAllPlatforms="true" includeSource="true" includeConfigurePhase="false" type="InstallableUnit">
       <unit id="ch.qos.logback.classic" version="1.0.7.v20121108-1250"/>

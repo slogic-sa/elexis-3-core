@@ -2,6 +2,14 @@ target "Juno for Elexis 3.0"
 
 with source allEnvironments
 
+location "http://download.eclipse.org/tools/ajdt/42/update"{
+	org.aspectj.runtime
+	org.aspectj.weaver 
+	org.eclipse.equinox.weaving.aspectj
+	org.eclipse.equinox.weaving.caching
+	org.eclipse.equinox.weaving.hook
+}
+
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20130517111416/repository/" {
 	ca.odell.glazedlists
 	org.apache.xml.resolver
@@ -15,14 +23,6 @@ location "http://download.eclipse.org/tools/orbit/downloads/drops/R2013051711141
 
 location "http://download.eclipse.org/tools/orbit/downloads/drops/R20150124073747/repository/" {
 	edu.emory.mathcs.backport [3.1.0,3.1.1)
-}
-
-location "http://download.eclipse.org/tools/ajdt/43/update"{
-	org.aspectj.runtime
-	org.aspectj.weaver
-	org.eclipse.equinox.weaving.aspectj
-	org.eclipse.equinox.weaving.caching
-	org.eclipse.equinox.weaving.hook
 }
 
 location "http://download.elexis.info/mirror.4.elexis/snapshot" {

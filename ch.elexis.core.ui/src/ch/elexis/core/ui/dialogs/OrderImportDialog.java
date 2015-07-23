@@ -316,12 +316,6 @@ public class OrderImportDialog extends TitleAreaDialog {
 		column.getColumn().setWidth(60);
 		column.setLabelProvider(new StockLabelProvider());
 		
-		/* Pharamcode */
-		column = new TableViewerColumn(viewer, SWT.LEFT);
-		column.getColumn().setText("Pharmacode");
-		column.getColumn().setWidth(80);
-		column.setLabelProvider(new PharamcodeLabelProvider());
-		
 		/* EAN */
 		column = new TableViewerColumn(viewer, SWT.LEFT);
 		column.getColumn().setText("EAN");
@@ -519,26 +513,13 @@ public class OrderImportDialog extends TitleAreaDialog {
 		}
 	}
 	
-	class PharamcodeLabelProvider extends BaseLabelProvider {
-		public String getText(Object element){
-			String text = "";
-			
-			if (element instanceof OrderElement) {
-				OrderElement orderElement = (OrderElement) element;
-				text = orderElement.artikel.getPharmaCode();
-			}
-			
-			return text;
-		}
-	}
-	
 	class EANLabelProvider extends BaseLabelProvider {
 		public String getText(Object element){
 			String text = "";
 			
 			if (element instanceof OrderElement) {
 				OrderElement orderElement = (OrderElement) element;
-				text = orderElement.artikel.getExt("EAN");
+				text = orderElement.artikel.getExt("GTIN/EAN");
 				if (StringTool.isNothing(text)) {
 					text = orderElement.artikel.getEAN();
 				}

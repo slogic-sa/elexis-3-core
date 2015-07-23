@@ -72,8 +72,7 @@ public class ArticleDefaultSignature extends PersistentObject {
 	public ArticleDefaultSignature(Artikel article, String atcCode){
 		create(null);
 		if (article != null)
-			set(FLD_ARTICLE,
-				article.getEAN() + "$" + article.getPharmaCode() + "$" + article.storeToString());
+			set(FLD_ARTICLE, article.getEAN() + "$" + article.storeToString());
 		if (atcCode != null)
 			set(FLD_ATC_CODE, atcCode);
 	}

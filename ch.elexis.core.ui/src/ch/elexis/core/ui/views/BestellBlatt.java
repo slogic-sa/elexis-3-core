@@ -51,7 +51,7 @@ public class BestellBlatt extends ViewPart implements ICallback {
 		Money sum = new Money();
 		tbl[0] =
 			new String[] {
-				Messages.BestellBlatt_Number, Messages.BestellBlatt_Pharmacode,
+				Messages.BestellBlatt_Number, Messages.BestellBlatt_GTIN,
 				Messages.BestellBlatt_Name, Messages.BestellBlatt_UnitPrice,
 				Messages.BestellBlatt_LinePrice
 			};
@@ -59,7 +59,7 @@ public class BestellBlatt extends ViewPart implements ICallback {
 		for (Item it : items) {
 			String[] row = new String[5];
 			row[0] = Integer.toString(it.num);
-			row[1] = it.art.getPharmaCode();
+			row[1] = it.art.getEAN();
 			row[2] = it.art.getName();
 			row[3] = it.art.getEKPreis().getAmountAsString(); // Integer.toString(it.art.getEKPreis());
 			// int amount=it.num*it.art.getEKPreis();

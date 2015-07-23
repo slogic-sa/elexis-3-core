@@ -131,7 +131,7 @@ public class LagerView extends ViewPart implements DoubleClickListener, ISaveabl
 				Artikel art = (Artikel) element;
 				switch (columnIndex) {
 				case 0:
-					return art.getPharmaCode();
+					return art.getEAN();
 				case 1:
 					return art.getLabel();
 				case 2:
@@ -208,12 +208,12 @@ public class LagerView extends ViewPart implements DoubleClickListener, ISaveabl
 	
 	class LagerWidgetProvider implements WidgetProvider {
 		String[] columns = {
-			Messages.LagerView_pharmacode, Messages.LagerView_name, Messages.LagerView_istBestand,
+			Messages.LagerView_gtin, Messages.LagerView_name, Messages.LagerView_istBestand,
 			Messages.LagerView_minBestand, Messages.LagerView_maxBestand,
 			Messages.LagerView_controlled, Messages.LagerView_dealer
 		};
 		int[] colwidth = {
-			60, 300, 40, 40, 40, 40, 200
+			100, 300, 40, 40, 40, 40, 200
 		};
 		
 		public StructuredViewer createViewer(Composite parent){

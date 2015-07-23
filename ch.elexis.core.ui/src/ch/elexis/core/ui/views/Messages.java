@@ -48,7 +48,7 @@ public class Messages extends NLS {
 	public static String BestellBlatt_LinePrice;
 	public static String BestellBlatt_Name;
 	public static String BestellBlatt_Number;
-	public static String BestellBlatt_Pharmacode;
+	public static String BestellBlatt_GTIN;
 	public static String BestellBlatt_Sum;
 	public static String BestellBlatt_TemplateName;
 	public static String BestellBlatt_UnitPrice;
@@ -273,7 +273,7 @@ public class Messages extends NLS {
 	public static String LagerView_maxBestand;
 	public static String LagerView_minBestand;
 	public static String LagerView_name;
-	public static String LagerView_pharmacode;
+	public static String LagerView_gtin;
 	public static String Leistungscodes_necessaryData;
 	public static String MediVerlaufView_dateFrom;
 	public static String MediVerlaufView_dateUntil;

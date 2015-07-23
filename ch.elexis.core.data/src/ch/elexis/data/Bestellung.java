@@ -20,7 +20,6 @@ import java.util.List;
 
 import ch.rgw.tools.JdbcLink;
 import ch.rgw.tools.Log;
-import ch.rgw.tools.StringTool;
 import ch.rgw.tools.TimeTool;
 
 public class Bestellung extends PersistentObject {
@@ -33,10 +32,6 @@ public class Bestellung extends PersistentObject {
 	private List<Item> alItems;
 	private static PersistentObjectFactory poFactory = new PersistentObjectFactory();
 	private static Log logger = Log.get(Bestellung.class.getName());
-	
-	public enum ListenTyp {
-		PHARMACODE, NAME, VOLL
-	};
 	
 	static final String create = "CREATE TABLE " + TABLENAME + " ("
 		+ "ID       	VARCHAR(80) primary key, " + "lastupdate BIGINT,"
@@ -88,28 +83,6 @@ public class Bestellung extends PersistentObject {
 		String[] i = getId().split(":"); //$NON-NLS-1$
 		TimeTool t = new TimeTool(i[1]);
 		return i[0] + ": " + t.toString(TimeTool.FULL_GER); //$NON-NLS-1$
-	}
-	
-	public String asString(ListenTyp type){
-		initItems();
-		StringBuilder ret = new StringBuilder();
-		for (Item i : alItems) {
-			switch (type) {
-			case PHARMACODE:
-				ret.append(i.art.getPharmaCode());
-				break;
-			case NAME:
-				ret.append(i.art.getLabel());
-				break;
-			case VOLL:
-				ret.append(i.art.getPharmaCode()).append(StringTool.space).append(i.art.getName());
-				break;
-			default:
-				break;
-			}
-			ret.append(",").append(i.num).append(StringTool.lf); //$NON-NLS-1$
-		}
-		return ret.toString();
 	}
 	
 	public List<Item> asList(){

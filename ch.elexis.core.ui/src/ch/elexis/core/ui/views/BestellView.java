@@ -499,10 +499,10 @@ public class BestellView extends ViewPart implements ISaveablePart2 {
 						
 						StringBuffer export = new StringBuffer();
 						for (Item item : best) {
-							String pharmaCode = item.art.get(Artikel.FLD_PHARMACODE);
+							String gtin = item.art.get(Artikel.FLD_EAN);
 							int num = item.num;
 							String name = item.art.getName();
-							String line = pharmaCode + ", " + num + ", " + name; //$NON-NLS-1$ //$NON-NLS-2$
+							String line = gtin + ", " + num + ", " + name; //$NON-NLS-1$ //$NON-NLS-2$
 							
 							export.append(line);
 							export.append(System.getProperty("line.separator")); //$NON-NLS-1$

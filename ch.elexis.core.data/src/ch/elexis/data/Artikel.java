@@ -479,8 +479,7 @@ public class Artikel extends VerrechenbarAdapter {
 	}
 	
 	public String getEAN(){
-		String ean = get(FLD_EAN);
-		return ean;
+		return get(FLD_EAN);
 	}
 	
 	public void setEAN(String ean){
@@ -496,12 +495,23 @@ public class Artikel extends VerrechenbarAdapter {
 		set(FLD_ATC_CODE, ATC_code);
 	}
 	
+	/**
+	 * 
+	 * @param pharmacode
+	 * @deprecated Pharmacode is no longer supported by 31.01.2016. <br>
+	 *             use GTIN/EAN {@link Artikel#FLD_EAN} if possible instead
+	 */
 	public void setPharmaCode(String pharmacode){
 		Map<Object, Object> ext = getMap(FLD_EXTINFO);
 		ext.put(FLD_PHARMACODE, pharmacode);
 		setMap(FLD_EXTINFO, ext);
 	}
 	
+	/**
+	 * @deprecated Pharmacode is no longer supported by 31.01.2016. <br>
+	 *             use GTIN/EAN {@link Artikel#FLD_EAN} if possible instead
+	 * @return
+	 */
 	public String getPharmaCode(){
 		return checkNull(getExt(FLD_PHARMACODE));
 	}
@@ -630,6 +640,7 @@ public class Artikel extends VerrechenbarAdapter {
 	
 	@Override
 	protected String getExportUIDValue(){
+		//TODO what to do here as XML2Database is never used
 		String pharmacode = getExt(FLD_PHARMACODE);
 		String ean = get(FLD_EAN);
 		return ean + "_" + pharmacode;

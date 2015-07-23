@@ -88,10 +88,10 @@ public class XidElement extends XChangeElement {
 		if (!StringTool.isNothing(ean)) {
 			addIdentities(art, Xid.DOMAIN_EAN, ean, Xid.ASSIGNMENT_REGIONAL, false);
 		}
-		String pk = art.getPharmaCode();
-		if (!StringTool.isNothing(pk)) {
-			addIdentities(art, Artikel.XID_PHARMACODE, pk, Xid.ASSIGNMENT_REGIONAL, false);
-		}
+		//		String pk = art.getPharmaCode();
+		//		if (!StringTool.isNothing(pk)) {
+		//			addIdentities(art, Artikel.XID_PHARMACODE, pk, Xid.ASSIGNMENT_REGIONAL, false);
+		//		}
 		return this;
 	}
 	

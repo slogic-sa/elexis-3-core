@@ -13,12 +13,10 @@
 package ch.elexis.data;
 
 import java.util.Comparator;
-import java.util.List;
 
 import ch.elexis.core.data.interfaces.IOptifier;
 import ch.elexis.core.data.interfaces.IVerrechenbar;
 import ch.elexis.core.data.util.MultiplikatorList;
-import ch.elexis.data.VerrechenbarFavorites.Favorite;
 import ch.rgw.tools.IFilter;
 import ch.rgw.tools.JdbcLink;
 import ch.rgw.tools.JdbcLink.Stm;
@@ -26,6 +24,7 @@ import ch.rgw.tools.Money;
 import ch.rgw.tools.TimeTool;
 
 public abstract class VerrechenbarAdapter extends PersistentObject implements IVerrechenbar {
+	public static final String CODESYSTEM_CODE_GTIN = "402";
 	
 	@Override
 	public String getLabel(){

@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import ch.elexis.core.ui.medication.views.MedicationComposite;
 import ch.elexis.core.ui.medication.views.Messages;
+import ch.elexis.core.ui.medication.views.PrescriptionDescriptor;
 import ch.elexis.data.Prescription;
 
 public class MovePrescriptionPositionInTableUpAction extends Action {
@@ -18,7 +19,8 @@ public class MovePrescriptionPositionInTableUpAction extends Action {
 	private TableViewer tv;
 	private MedicationComposite mediComposite;
 	
-	public MovePrescriptionPositionInTableUpAction(TableViewer tv, MedicationComposite mediComposite){
+	public MovePrescriptionPositionInTableUpAction(TableViewer tv,
+		MedicationComposite mediComposite){
 		this.tv = tv;
 		this.mediComposite = mediComposite;
 	}
@@ -40,14 +42,14 @@ public class MovePrescriptionPositionInTableUpAction extends Action {
 		int selectionIndex = tv.getTable().getSelectionIndex();
 		if (selectionIndex == 0)
 			return;
-		
+			
 		List<TableItem> asList = Arrays.asList(tv.getTable().getItems());
 		Collections.swap(asList, selectionIndex, selectionIndex - 1);
 		
 		for (int i = 0; i < asList.size(); i++) {
 			TableItem tableItem = asList.get(i);
-			Prescription pres = (Prescription) tableItem.getData();
-			pres.set(Prescription.FLD_SORT_ORDER, Integer.toString(i));
+			PrescriptionDescriptor pd = (PrescriptionDescriptor) tableItem.getData();
+			pd.getPrescription().set(Prescription.FLD_SORT_ORDER, Integer.toString(i));
 		}
 		
 		tv.refresh();

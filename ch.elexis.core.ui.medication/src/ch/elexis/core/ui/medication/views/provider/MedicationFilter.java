@@ -3,7 +3,7 @@ package ch.elexis.core.ui.medication.views.provider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
-import ch.elexis.data.Prescription;
+import ch.elexis.core.ui.medication.views.PrescriptionDescriptor;
 
 public class MedicationFilter extends ViewerFilter {
 	private String searchString;
@@ -27,15 +27,12 @@ public class MedicationFilter extends ViewerFilter {
 		if (searchString == null || searchString.length() == 0) {
 			return true;
 		}
-		Prescription p = (Prescription) element;
+		PrescriptionDescriptor pd = (PrescriptionDescriptor) element;
 		
 		// check match of article name
 		String mediName = "??";
-		if (p.getArtikel() != null) {
-			String label = p.getArtikel().getLabel();
-			if (label != null) {
-				mediName = label.toLowerCase();
-			}
+		if (pd.getLabel() != null) {
+			mediName = pd.getLabel().toLowerCase();
 		}
 		
 		if (mediName.matches(searchString)) {
@@ -43,9 +40,9 @@ public class MedicationFilter extends ViewerFilter {
 		}
 		return false;
 	}
-
+	
 	public void clearSearchText(){
-		this.searchString = "";	
+		this.searchString = "";
 	}
 	
 }

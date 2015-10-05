@@ -28,7 +28,6 @@ import ch.elexis.core.ui.medication.action.MovePrescriptionPositionInTableDownAc
 import ch.elexis.core.ui.medication.action.MovePrescriptionPositionInTableUpAction;
 import ch.elexis.data.Patient;
 import ch.elexis.data.Prescription;
-import ch.elexis.data.Query;
 
 public class MedicationView extends ViewPart implements IActivationListener {
 	public MedicationView(){}
@@ -121,10 +120,11 @@ public class MedicationView extends ViewPart implements IActivationListener {
 			return;
 		}
 		
-		Query<Prescription> qbe = new Query<Prescription>(Prescription.class);
-		qbe.add(Prescription.FLD_PATIENT_ID, Query.EQUALS, pat.getId());
-		List<Prescription> result = qbe.execute();
-		tpc.updateUi(result);
+		List<PrescriptionDescriptor> prescDesc = PrescriptionDescriptor.fetchForPatient(pat);
+		//		Query<Prescription> qbe = new Query<Prescription>(Prescription.class);
+		//		qbe.add(Prescription.FLD_PATIENT_ID, Query.EQUALS, pat.getId());
+		//		List<Prescription> execute = qbe.execute();
+		tpc.updateUi(prescDesc);
 	}
 	
 	@Override

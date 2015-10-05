@@ -5,7 +5,6 @@ import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 
 import ch.elexis.core.constants.StringConstants;
-import ch.elexis.data.Artikel;
 import ch.elexis.data.Prescription;
 import ch.rgw.tools.TimeTool;
 
@@ -50,27 +49,10 @@ public enum ViewerSortOrder {
 	public static class ManualViewerComparator extends ViewerComparator {
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2){
-			Prescription p1 = (Prescription) e1;
-			Prescription p2 = (Prescription) e2;
+			PrescriptionDescriptor p1 = (PrescriptionDescriptor) e1;
+			PrescriptionDescriptor p2 = (PrescriptionDescriptor) e2;
 			
-			String sos1 = p1.get(Prescription.FLD_SORT_ORDER);
-			String sos2 = p2.get(Prescription.FLD_SORT_ORDER);
-			
-			if (sos1.length() == 0 && sos2.length() == 0)
-				return 0;
-				
-			int val1 = Integer.MAX_VALUE;
-			int val2 = Integer.MAX_VALUE;
-			
-			try {
-				val1 = Integer.parseInt(sos1);
-			} catch (NumberFormatException nfe) {}
-			
-			try {
-				val2 = Integer.parseInt(sos2);
-			} catch (NumberFormatException nfe) {}
-			
-			return Integer.compare(val1, val2);
+			return Integer.compare(p1.getSortOrder(), p2.getSortOrder());
 		}
 	}
 	
@@ -81,47 +63,39 @@ public enum ViewerSortOrder {
 	public static class DefaultViewerComparator extends ViewerComparator {
 		@Override
 		public int compare(Viewer viewer, Object e1, Object e2){
-			Prescription p1 = (Prescription) e1;
-			Prescription p2 = (Prescription) e2;
+			PrescriptionDescriptor p1 = (PrescriptionDescriptor) e1;
+			PrescriptionDescriptor p2 = (PrescriptionDescriptor) e2;
 			int rc = 0;
 			switch (propertyIdx) {
 			case 0:
 				rc = 0;
 				break;
 			case 1:
-				String l1 = getArticleName(p1);
-				String l2 = getArticleName(p2);
-				if (l1 == null) {
-					l1 = "";
-				}
-				if (l2 == null) {
-					l2 = "";
-				}
-				rc = l1.compareTo(l2);
+				rc = p1.getLabel().compareTo(p2.getLabel());
 				break;
 			case 2:
-				String dose1 = getDose(p1.getDosis());
-				String dose2 = getDose(p2.getDosis());
+				String dose1 = getDose(p1.getDosage());
+				String dose2 = getDose(p2.getDosage());
 				rc = dose1.compareTo(dose2);
 				break;
 			case 3:
-				time1.set(p1.getBeginDate());
-				time2.set(p2.getBeginDate());
+				time1.set(p1.getLastDisposedAsync());
+				time2.set(p2.getLastDisposedAsync());
 				rc = time1.compareTo(time2);
 				break;
 			case 4:
-				String supUntil1 = getSuppliedUntil(p1);
-				String supUntil2 = getSuppliedUntil(p2);
+				String supUntil1 = p1.getSuppliedUntilAsync();
+				String supUntil2 = p2.getSuppliedUntilAsync();
 				rc = supUntil1.compareTo(supUntil2);
 				break;
 			case 5:
 				// stopped column is optional 
-				boolean stop1IsValid = isStopped(p1.getEndDate());
-				boolean stop2IsValid = isStopped(p2.getEndDate());
+				boolean stop1IsValid = isStopped(p1.getStopDateAsync());
+				boolean stop2IsValid = isStopped(p2.getStopDateAsync());
 				
 				if (stop1IsValid && stop2IsValid) {
-					time1.set(p1.getEndDate());
-					time2.set(p2.getEndDate());
+					time1.set(p1.getStopDateAsync());
+					time2.set(p2.getStopDateAsync());
 					rc = time1.compareTo(time2);
 				} else {
 					if (stop1IsValid && !stop2IsValid)
@@ -133,16 +107,16 @@ public enum ViewerSortOrder {
 				}
 				break;
 			case 6:
-				String com1 = p1.getBemerkung();
-				String com2 = p2.getBemerkung();
+				String com1 = p1.getIntakeOrder();
+				String com2 = p2.getIntakeOrder();
 				rc = com1.compareTo(com2);
 				break;
 			case 7:
-				String stopReason1 = p1.getStopReason();
+				String stopReason1 = p1.getStopReasonAsync();
 				if (stopReason1 == null)
 					stopReason1 = "";
 					
-				String stopReason2 = p2.getStopReason();
+				String stopReason2 = p2.getStopReasonAsync();
 				if (stopReason2 == null)
 					stopReason2 = "";
 					
@@ -158,30 +132,8 @@ public enum ViewerSortOrder {
 			return rc;
 		}
 		
-		private String getArticleName(Prescription p){
-			String label = "??";
-			if (p.getArtikel() != null) {
-				Artikel art = p.getArtikel();
-				label = art.getLabel();
-			}
-			return label;
-		}
-		
 		private String getDose(String dose){
 			return (dose.equals(StringConstants.ZERO) ? "gestoppt" : dose);
-		}
-		
-		private String getSuppliedUntil(Prescription p){
-			if (!p.isFixedMediation() || p.isReserveMedication()) {
-				return "";
-			}
-			
-			TimeTool time = p.getSuppliedUntilDate();
-			if (time != null && time.isAfterOrEqual(new TimeTool())) {
-				return "OK";
-			}
-			
-			return "?";
 		}
 		
 		private boolean isStopped(String endDate){

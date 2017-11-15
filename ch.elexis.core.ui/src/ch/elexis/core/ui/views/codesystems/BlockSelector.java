@@ -22,6 +22,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -30,11 +31,14 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.data.events.ElexisEvent;
 import ch.elexis.core.data.events.ElexisEventDispatcher;
@@ -43,6 +47,7 @@ import ch.elexis.core.model.ICodeElement;
 import ch.elexis.core.model.IPersistentObject;
 import ch.elexis.core.ui.actions.ToggleVerrechenbarFavoriteAction;
 import ch.elexis.core.ui.commands.ExportiereBloeckeCommand;
+import ch.elexis.core.ui.dialogs.base.InputDialog;
 import ch.elexis.core.ui.icons.Images;
 import ch.elexis.core.ui.selectors.FieldDescriptor;
 import ch.elexis.core.ui.selectors.SelectorPanel;
@@ -52,6 +57,7 @@ import ch.elexis.core.ui.util.viewers.SelectorPanelProvider;
 import ch.elexis.core.ui.util.viewers.SimpleWidgetProvider;
 import ch.elexis.core.ui.util.viewers.ViewerConfigurer;
 import ch.elexis.data.Leistungsblock;
+import ch.elexis.data.Mandant;
 import ch.elexis.data.PersistentObject;
 import ch.elexis.data.Query;
 import ch.elexis.data.VerrechenbarFavorites;
@@ -60,7 +66,7 @@ import ch.rgw.tools.IFilter;
 import ch.rgw.tools.Tree;
 
 public class BlockSelector extends CodeSelectorFactory {
-	private IAction deleteAction, createAction, exportAction;
+	private IAction deleteAction, createAction, exportAction, copyAction;
 	private CommonViewer cv;
 	private MenuManager mgr;
 	static SelectorPanelProvider slp;
@@ -89,6 +95,8 @@ public class BlockSelector extends CodeSelectorFactory {
 			public void menuAboutToShow(IMenuManager manager){
 				manager.add(tvfa);
 				manager.add(deleteAction);
+				manager.add(copyAction);
+				addPopupCommandContributions(manager, cv.getSelection());
 			}
 		});
 
@@ -179,8 +187,38 @@ public class BlockSelector extends CodeSelectorFactory {
 				try {
 					new ExportiereBloeckeCommand().execute(null);
 				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LoggerFactory.getLogger(getClass()).error("Error exporting block", e);
+				}
+			}
+		};
+		copyAction = new Action("Block kopieren") {
+			{
+				setImageDescriptor(Images.IMG_COPY.getImageDescriptor());
+				setToolTipText("Den Block umbenennen und kopieren");
+			}
+			
+			@Override
+			public void run(){
+				Object o = cv.getSelection()[0];
+				if (o instanceof Leistungsblock) {
+					Leistungsblock sourceBlock = (Leistungsblock) o;
+					InputDialog inputDlg = new InputDialog(Display.getDefault().getActiveShell(),
+						"Block kopieren", "Bitte den Namen der Kopie eingeben bzw. bestätigen",
+						sourceBlock.getName() + " Kopie", new IInputValidator() {
+							
+							@Override
+							public String isValid(String newText){
+								return (newText != null && !newText.isEmpty()) ? null
+										: "Fehler, kein Name.";
+							}
+						}, SWT.BORDER);
+					if (inputDlg.open() == Window.OK) {
+						String newName = inputDlg.getValue();
+						Leistungsblock newBlock = new Leistungsblock(newName,
+							Mandant.load(sourceBlock.get(Leistungsblock.FLD_MANDANT_ID)));
+						sourceBlock.getElements().forEach(e -> newBlock.addElement(e));
+						cv.notify(CommonViewer.Message.update);
+					}
 				}
 			}
 		};
@@ -215,9 +253,8 @@ public class BlockSelector extends CodeSelectorFactory {
 		
 		public Object[] getElements(Object inputElement){
 			Query<Leistungsblock> qbe = new Query<Leistungsblock>(Leistungsblock.class);
-			qbe.orderBy(false, new String[] {
-				"Name"
-			});
+			qbe.add(Leistungsblock.FLD_ID, Query.NOT_EQUAL, Leistungsblock.VERSION_ID);
+			qbe.orderBy(false, Leistungsblock.FLD_NAME);
 			return qbe.execute().toArray();
 		}
 		

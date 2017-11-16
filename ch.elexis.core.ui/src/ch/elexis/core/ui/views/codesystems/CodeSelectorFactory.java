@@ -493,27 +493,17 @@ public abstract class CodeSelectorFactory implements IExecutableExtension {
 									target.codeSelected(po);
 								}
 							}
-							java.util.List<ICodeElement> references = block.getElementReferences();
-							if (references.size() > elements.size()) {
-								for (ICodeElement reference : references
-									.toArray(new ICodeElement[references.size()])) {
-									for (ICodeElement element : elements) {
-										if (element.getCodeSystemName()
-											.equals(reference.getCodeSystemName())
-											&& element.getCode().equals(reference.getCode())) {
-											references.remove(reference);
-										}
-									}
-								}
+							java.util.List<ICodeElement> diff = block.getDiffToReferences(elements);
+							if (!diff.isEmpty()) {
 								StringBuilder sb = new StringBuilder();
-								references.forEach(r -> {
+								diff.forEach(r -> {
 									if (sb.length() > 0) {
 										sb.append("\n");
 									}
 									sb.append(r);
 								});
 								MessageDialog.openWarning(getShell(), "Warnung",
-									"Warnung es konnten folgende Leistungen nicht verrechnet werden.\n"
+									"Warnung folgende Leistungen konnten im aktuellen Kontext (Fall, Konsultation, Gesetz) nicht verrechnet werden.\n"
 										+ sb.toString());
 							}
 						} else {

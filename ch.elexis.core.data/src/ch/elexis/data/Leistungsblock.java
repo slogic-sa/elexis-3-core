@@ -49,6 +49,8 @@ public class Leistungsblock extends PersistentObject implements ICodeElement {
 	public static final String XIDDOMAIN = "www.xid.ch/id/elexis_leistungsblock"; //$NON-NLS-1$
 	public static final String XIDDOMAIN_SIMPLENAME = "Leistungsblock";//$NON-NLS-1$
 	
+	private static final String SEPARATOR = ":=:";
+	
 	// @formatter:off
 	private static final String upd100 =
 			"ALTER TABLE " + TABLENAME + " ADD " + FLD_CODEELEMENTS + " TEXT;"
@@ -218,7 +220,7 @@ public class Leistungsblock extends PersistentObject implements ICodeElement {
 		if (service != null) {
 			String codeelements = get(FLD_CODEELEMENTS);
 			if (!codeelements.isEmpty()) {
-				String[] parts = codeelements.split(StringConstants.COMMA);
+				String[] parts = codeelements.split("\\" + SEPARATOR);
 				for (String part : parts) {
 					Optional<ICodeElement> created =
 						service.createFromString(part, CodeElementServiceHolder.createContext());
@@ -240,7 +242,7 @@ public class Leistungsblock extends PersistentObject implements ICodeElement {
 		if (service != null) {
 			String codeelements = get(FLD_CODEELEMENTS);
 			if (!codeelements.isEmpty()) {
-				String[] parts = codeelements.split(StringConstants.COMMA);
+				String[] parts = codeelements.split("\\" + SEPARATOR);
 				for (String part : parts) {
 					String[] elementParts = service.getStoreToStringParts(part);
 					if (elementParts != null && elementParts.length > 1) {
@@ -250,6 +252,32 @@ public class Leistungsblock extends PersistentObject implements ICodeElement {
 			}
 		}
 		return ret;
+	}
+	
+	/**
+	 * Get a list of {@link ICodeElement} references of this block, which are not contained in the
+	 * elements list. This is useful to determine if all {@link ICodeElement} of the block are in
+	 * the elements list.
+	 * 
+	 * @param elements
+	 * @return
+	 */
+	public List<ICodeElement> getDiffToReferences(List<ICodeElement> elements){
+		List<ICodeElement> references = getElementReferences();
+		if (references.size() > elements.size()) {
+			// use copy to iterate 
+			for (ICodeElement reference : references.toArray(new ICodeElement[references.size()])) {
+				for (ICodeElement element : elements) {
+					if (element.getCodeSystemName().equals(reference.getCodeSystemName())
+						&& element.getCode().equals(reference.getCode())) {
+						references.remove(reference);
+					}
+				}
+			}
+		} else {
+			references.clear();
+		}
+		return references;
 	}
 	
 	private int getIndexOf(List<ICodeElement> elements, ICodeElement element){
@@ -288,7 +316,7 @@ public class Leistungsblock extends PersistentObject implements ICodeElement {
 			StringBuilder sb = new StringBuilder();
 			for (ICodeElement element : elements) {
 				if (sb.length() > 0) {
-					sb.append(StringConstants.COMMA);
+					sb.append(SEPARATOR);
 				}
 				sb.append(service.storeToString(element));
 			}

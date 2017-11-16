@@ -25,7 +25,7 @@ public interface ICodeElementService {
 	 * @return
 	 */
 	public default String storeToString(ICodeElement element){
-		return element.getCodeSystemName() + "|" + element.getCode();
+		return element.getCodeSystemName() + "|" + element.getCode() + "|" + element.getText();
 	}
 	
 	/**
@@ -44,7 +44,8 @@ public interface ICodeElementService {
 	public default Optional<ICodeElement> createFromString(String storeToString,
 		HashMap<Object, Object> context){
 		String[] parts = getStoreToStringParts(storeToString);
-		if (parts != null && parts.length == 2) {
+		// only system and code are relevant for loading 
+		if (parts != null && parts.length > 1) {
 			return createFromString(parts[0], parts[1], context);
 		}
 		return Optional.empty();
@@ -55,6 +56,7 @@ public interface ICodeElementService {
 	 * <br/>
 	 * <li>index 0, system</li>
 	 * <li>index 1, code</li>
+	 * <li>index 2, text</li>
 	 * 
 	 * @param storeToString
 	 * @return

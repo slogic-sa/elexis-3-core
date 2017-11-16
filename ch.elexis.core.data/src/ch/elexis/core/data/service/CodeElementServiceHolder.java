@@ -15,6 +15,8 @@ import ch.elexis.data.Konsultation;
 @Component(service = {})
 public class CodeElementServiceHolder {
 	
+	private static HashMap<Object, Object> emptyMap = new HashMap<>();
+	
 	private static ICodeElementService elementService;
 	
 	@Reference(unbind = "-")
@@ -37,5 +39,9 @@ public class CodeElementServiceHolder {
 			ret.put(ContextKeys.COVERAGE, coverage);
 		}
 		return ret;
+	}
+	
+	public static HashMap<Object, Object> emtpyContext(){
+		return emptyMap;
 	}
 }

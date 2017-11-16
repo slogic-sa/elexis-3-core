@@ -246,7 +246,12 @@ public class Leistungsblock extends PersistentObject implements ICodeElement {
 				for (String part : parts) {
 					String[] elementParts = service.getStoreToStringParts(part);
 					if (elementParts != null && elementParts.length > 1) {
-						ret.add(new CodeElementDTO(elementParts[0], elementParts[1]));
+						CodeElementDTO reference =
+							new CodeElementDTO(elementParts[0], elementParts[1]);
+						if (elementParts.length > 2) {
+							reference.setText(elementParts[2]);
+						}
+						ret.add(reference);
 					}
 				}
 			}

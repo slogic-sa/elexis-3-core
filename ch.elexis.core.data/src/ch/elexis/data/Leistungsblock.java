@@ -44,7 +44,7 @@ public class Leistungsblock extends PersistentObject implements ICodeElement {
 	public static final String FLD_NAME = "Name"; //$NON-NLS-1$
 	public static final String FLD_LEISTUNGEN = "Leistungen"; //$NON-NLS-1$
 	public static final String FLD_MACRO = "Macro"; //$NON-NLS-1$
-	public static final String FLD_CODEELEMENTS = "codelements"; //$NON-NLS-1$
+	public static final String FLD_CODEELEMENTS = "codeelements"; //$NON-NLS-1$
 	
 	public static final String XIDDOMAIN = "www.xid.ch/id/elexis_leistungsblock"; //$NON-NLS-1$
 	public static final String XIDDOMAIN_SIMPLENAME = "Leistungsblock";//$NON-NLS-1$
@@ -65,7 +65,7 @@ public class Leistungsblock extends PersistentObject implements ICodeElement {
 		+ "Name		 			VARCHAR(30),"
 		+ "Macro				VARCHAR(30),"
 		+ "Leistungen			BLOB," 
-		+ "codelements	 		TEXT" 
+		+ "codeelements	 		TEXT" 
 		+ ");"
 		+ "CREATE INDEX block1 on " + TABLENAME + " (" + FLD_NAME + ");"		
 		+ "CREATE INDEX block2 on " + TABLENAME + " (" + FLD_MANDANT_ID + ");"		

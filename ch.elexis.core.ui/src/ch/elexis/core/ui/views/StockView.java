@@ -329,9 +329,11 @@ public class StockView extends ViewPart implements ISaveablePart2, IActivationLi
 				
 				PersistentObjectEditingSupport poes = null;
 				if (i == 4) {
-					poes = new PersistentObjectEditingSupport(ret, StockEntry.FLD_MIN, Integer.class, true);
+					poes = new PersistentObjectEditingSupport(ret, StockEntry.FLD_MIN,
+						Integer.class, true);
 				} else if (i == 5) {
-					poes = new PersistentObjectEditingSupport(ret, StockEntry.FLD_CURRENT, Integer.class, true) {
+					poes = new PersistentObjectEditingSupport(ret, StockEntry.FLD_CURRENT,
+						Integer.class, true) {
 						protected boolean canEdit(Object element){
 							boolean canEdit = super.canEdit(element);
 							if (canEdit) {
@@ -342,7 +344,8 @@ public class StockView extends ViewPart implements ISaveablePart2, IActivationLi
 						};
 					};
 				} else if (i == 6) {
-					poes = new PersistentObjectEditingSupport(ret, StockEntry.FLD_MAX, Integer.class, true);
+					poes = new PersistentObjectEditingSupport(ret, StockEntry.FLD_MAX,
+						Integer.class, true);
 				}
 				
 				if (poes != null) {
@@ -401,17 +404,20 @@ public class StockView extends ViewPart implements ISaveablePart2, IActivationLi
 			}
 			ret.setSorter(new LagerTableSorter(3));
 			
-			TableViewerFocusCellManager focusCellManager = new TableViewerFocusCellManager(ret, new FocusCellHighlighter(ret) {});
-			ColumnViewerEditorActivationStrategy editorActivationStrategy = new ColumnViewerEditorActivationStrategy(ret) {
-	            @Override
-	            protected boolean isEditorActivationEvent(
-	                ColumnViewerEditorActivationEvent event) {
-	                    ViewerCell cell = (ViewerCell) event.getSource();
-	                   return cell.getColumnIndex() > 3 && cell.getColumnIndex() < 7;
-	            }
-			};
-			TableViewerEditor.create(ret, focusCellManager, editorActivationStrategy, TableViewerEditor.TABBING_HORIZONTAL);		
-		
+			TableViewerFocusCellManager focusCellManager =
+				new TableViewerFocusCellManager(ret, new FocusCellHighlighter(ret) {});
+			ColumnViewerEditorActivationStrategy editorActivationStrategy =
+				new ColumnViewerEditorActivationStrategy(ret) {
+					@Override
+					protected boolean isEditorActivationEvent(
+						ColumnViewerEditorActivationEvent event){
+						ViewerCell cell = (ViewerCell) event.getSource();
+						return cell.getColumnIndex() > 3 && cell.getColumnIndex() < 7;
+					}
+				};
+			TableViewerEditor.create(ret, focusCellManager, editorActivationStrategy,
+				TableViewerEditor.TABBING_HORIZONTAL);
+			
 			return ret;
 		}
 		
@@ -455,7 +461,7 @@ public class StockView extends ViewPart implements ISaveablePart2, IActivationLi
 			StockEntry stockEntry = fetchSelection();
 			IStatus status = CoreHub.getStockCommissioningSystemService()
 				.synchronizeInventory(stockEntry.getStock(), null, null);
-			if(!status.isOK()) {
+			if (!status.isOK()) {
 				ElexisStatus elStatus = new ElexisStatus(status);
 				StatusManager.getManager().handle(elStatus, StatusManager.SHOW);
 			}
@@ -499,7 +505,7 @@ public class StockView extends ViewPart implements ISaveablePart2, IActivationLi
 			StockEntry stockEntry = fetchSelection();
 			IStatus status = CoreHub.getStockCommissioningSystemService()
 				.performArticleOutlay(stockEntry, 1, null);
-			if(!status.isOK()) {
+			if (!status.isOK()) {
 				ElexisStatus elStatus = new ElexisStatus(status);
 				StatusManager.getManager().handle(elStatus, StatusManager.SHOW);
 			}
@@ -565,10 +571,10 @@ public class StockView extends ViewPart implements ISaveablePart2, IActivationLi
 		public boolean isEnabled(){
 			stockEntry = null;
 			IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
-			if (selection != null && !selection.isEmpty() && selection.getFirstElement() instanceof StockEntry) {
+			if (selection != null && !selection.isEmpty()
+				&& selection.getFirstElement() instanceof StockEntry) {
 				stockEntry = (StockEntry) selection.getFirstElement();
-				if (stockEntry != null)
-				{
+				if (stockEntry != null) {
 					Stock stock = stockEntry.getStock();
 					return stock != null && !stock.isCommissioningSystem();
 				}
@@ -582,25 +588,23 @@ public class StockView extends ViewPart implements ISaveablePart2, IActivationLi
 		}
 		
 		@Override
-		public String getToolTipText() {
+		public String getToolTipText(){
 			return Messages.LagerView_deleteActionToolTip;
 		}
-
+		
 		@Override
 		public void run(){
-			if (stockEntry != null)
-			{
+			if (stockEntry != null) {
 				Artikel article = stockEntry.getArticle();
-				if (article != null && MessageDialog.openConfirm(
-					viewer.getControl().getShell(),
-					Messages.LagerView_deleteActionConfirmCaption,
-					MessageFormat.format(Messages.LagerView_deleteConfirmBody, article.getName()))) {
+				if (article != null && MessageDialog.openConfirm(viewer.getControl().getShell(),
+					Messages.LagerView_deleteActionConfirmCaption, MessageFormat
+						.format(Messages.LagerView_deleteConfirmBody, article.getName()))) {
 					stockEntry.delete();
 					viewer.refresh();
 				}
 			}
 		}
-	}	
+	}
 	
 	/***********************************************************************************************
 	 * Die folgenden 6 Methoden implementieren das Interface ISaveablePart2 Wir benötigen das

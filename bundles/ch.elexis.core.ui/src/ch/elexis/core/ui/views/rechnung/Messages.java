@@ -141,6 +141,11 @@ public class Messages extends NLS {
 	public static String RnActions_addBookingAction;
 	public static String RnActions_addBookingTooltip;
 	public static String RnActions_addFineAction;
+	public static String RnActions_exportListDirName;
+	public static String RnActions_exportListDirNameMissingCaption;
+	public static String RnActions_exportListDirNameMissingText;
+	public static String RnActions_exportListCaption;
+	public static String RnActions_exportListMessage;
 	public static String RnActions_bills;
 	public static String RnActions_billsList;
 	public static String RnActions_billsListPrintetAt;
@@ -167,6 +172,8 @@ public class Messages extends NLS {
 	public static String RnActions_reminderConfirmCaption;
 	public static String RnActions_reminderConfirmMessage;
 	public static String RnActions_remindersAction;
+	public static String RnActions_exportListAction;
+	public static String RnActions_exportListTooltip;
 	public static String RnActions_remindersTooltip;
 	public static String RnActions_stornoAction;
 	public static String RnActions_stornoActionTooltip;

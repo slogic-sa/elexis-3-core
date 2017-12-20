@@ -1,5 +1,7 @@
 h1. Elexis 3 Core Repository
 
+This is a special branch with changes from Joerg Sigle, as discussed under https://wiki.elexis.info/Features_Jsigle_for_3.4
+
 <a href="https://gitlab.medelexis.ch/elexis/elexis-3-core/commits/master"><img alt="build status" src="https://gitlab.medelexis.ch/elexis/elexis-3-core/badges/master/build.svg" /></a>
 
 *IMPORTANT* Please employ the @3lexisFormatterProfile.xml@ as Eclipse default formatter prior to development and pull requests.

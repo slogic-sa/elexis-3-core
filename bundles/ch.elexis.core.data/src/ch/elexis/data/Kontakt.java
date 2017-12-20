@@ -340,12 +340,7 @@ public class Kontakt extends PersistentObject {
 			
 			String thisAddressFLD_MOBILEPHONE = (String) get(FLD_MOBILEPHONE);
 			if (!StringTool.isNothing(thisAddressFLD_MOBILEPHONE)) {
-				// With a colon after the label:
-				thisAddress.append(FLD_MOBILEPHONE + ":" + StringTool.space
-					+ thisAddressFLD_MOBILEPHONE + System.getProperty("line.separator"));
-				// Without a colon after the label:
-				// selectedPatInfosText.append(","+StringTool.space+k.FLD_MOBILEPHONE+StringTool.space+thisAddressFLD_MOBILEPHONE);
-			}
+				thisAddress.append(thisAddressFLD_MOBILEPHONE+System.getProperty("line.separator"));			}
 		}
 		
 		String thisAddressFLD_FAX = (String) get(FLD_FAX);

@@ -989,29 +989,9 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 							// the ID:
 							Person p = Person.load(k.getId());
 							
-							String salutation;
-							// TODO default salutation might be configurable (or a
-							// "Sex missing!"
-							// Info might appear) js
-							if (p.getGeschlecht().equals(Person.MALE)) {
-								salutation = Messages.KontakteView_SalutationM; // $NON-NLS-1$
-							} else // We do not use any default salutation for
-								// unknown sex to avoid
-									// errors!
-							if (p.getGeschlecht().equals(Person.FEMALE)) {
-								salutation = Messages.KontakteView_SalutationF; // $NON-NLS-1$
-							} else {
-								salutation = ""; //$NON-NLS-1$
-							}
-							
-							if (!StringTool.isNothing(salutation)) { // salutation
-																		// should
-																		// currently
-																		// never be empty, but paranoia...
-								SelectedContactInfosText.append(salutation);
-								SelectedContactInfosText.append(StringTool.space);
-							}
-							
+							// See issue 9505: For the short version of contact data copied from
+							// the list of people linked to a patient (usually, his/her physicians etc.),
+							// we want NEITHER the salutation (Herr/Frau) NOR the mobile phone number appear.
 							String titel = p.get(p.TITLE); // $NON-NLS-1$
 							if (!StringTool.isNothing(titel)) {
 								SelectedContactInfosText.append(titel).append(StringTool.space);
@@ -1133,15 +1113,9 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 								"," + StringTool.space + StringTool.space + thisAddressFLD_PHONE2);
 						}
 						
-						String thisAddressFLD_MOBILEPHONE = (String) k.get(k.FLD_MOBILEPHONE);
-						if (!StringTool.isNothing(thisAddressFLD_MOBILEPHONE)) {
-							// With a colon after the label:
-							// SelectedContactInfosText.append(","+StringTool.space+k.FLD_MOBILEPHONE+":"+StringTool.space+thisAddressFLD_MOBILEPHONE);
-							// Without a colon after the label:
-							SelectedContactInfosText
-								.append("," + StringTool.space + k.FLD_MOBILEPHONE
-									+ StringTool.space + thisAddressFLD_MOBILEPHONE);
-						}
+						// See issue 9505: For the short version of contact data copied from
+						// the list of people linked to a patient (usually, his/her physicians etc.),
+						// we want NEITHER the salutation (Herr/Frau) NOR the mobile phone number appear.
 						
 						String thisAddressFLD_FAX = (String) k.get(k.FLD_FAX);
 						if (!StringTool.isNothing(thisAddressFLD_FAX)) {

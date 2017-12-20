@@ -584,14 +584,7 @@ public class PatientenListeView extends ViewPart implements IActivationListener,
 										.append("," + StringTool.space + StringTool.space + thisAddressFLD_PHONE2);
 							}
 
-							String thisAddressFLD_MOBILEPHONE = k.get(Kontakt.FLD_MOBILEPHONE);
-							if (!StringTool.isNothing(thisAddressFLD_MOBILEPHONE)) {
-								// With a colon after the label:
-								// selectedPatInfosText.append(","+StringTool.space+k.FLD_MOBILEPHONE+":"+StringTool.space+thisAddressFLD_MOBILEPHONE);
-								// Without a colon after the label:
-								selectedPatInfosText.append("," + StringTool.space + Kontakt.FLD_MOBILEPHONE
-										+ StringTool.space + thisAddressFLD_MOBILEPHONE);
-							}
+							// Skip Kontakt.FLD_MOBILEPHONE see #9505
 
 							String thisAddressFLD_FAX = k.get(Kontakt.FLD_FAX);
 							if (!StringTool.isNothing(thisAddressFLD_FAX)) {

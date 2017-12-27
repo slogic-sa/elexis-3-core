@@ -141,6 +141,10 @@ public class Rechnungslauf implements IRunnableWithProgress {
 				log.warn("...skip Kons [" + k.getId() + "] fall is null/inexisting");
 				continue;
 			}
+			if (fall.ignoreForBilling(fall.getAbrechnungsSystem())) {
+				log.warn("...skip Kons [" + k.getId() + "] as fall " + fall.getAbrechnungsSystem() + " ignoreForBilling");
+				continue;
+			}
 			
 			Patient pat = fall.getPatient();
 			if ((pat == null) || (!pat.exists())) {

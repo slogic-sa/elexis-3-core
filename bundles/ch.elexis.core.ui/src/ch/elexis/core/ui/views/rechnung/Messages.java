@@ -57,6 +57,7 @@ public class Messages extends NLS {
 	public static String KonsZumVerrechnenView_RealleCreateBillsCaption;
 	public static String KonsZumVerrechnenView_ReallyCreateBillsBody;
 	public static String KonsZumVerrechnenView_allOpenCons;
+	public static String KonsZumVerrechnenView_allOpenConsTooltip;
 	public static String KonsZumVerrechnenView_analyzeCons;
 	public static String KonsZumVerrechnenView_autoAction;
 	public static String KonsZumVerrechnenView_autoToolTip;

@@ -218,7 +218,9 @@ public class Messages extends NLS {
 	public static String Leistungscodes_separateObligations;
 
 	public static String Leistungscodes_strictValidityCheck;
-	public static String Leistungscodes_useForBilling;
+	public static String Leistungscodes_forBilling;
+	public static String Leistungscodes_ignoreForBilling;
+	public static String Leistungscodes_ignoreForBillingTooltip;
 	public static String Leistungscodes_systemDisabled;
 	public static String Leistungscodes_text;
 	public static String Leistungscodes_textHL;

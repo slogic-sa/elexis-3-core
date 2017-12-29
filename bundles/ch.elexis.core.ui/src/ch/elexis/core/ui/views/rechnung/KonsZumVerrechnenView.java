@@ -176,6 +176,7 @@ public class KonsZumVerrechnenView extends ViewPart implements ISaveablePart2 {
 		left = tk.createForm(sash);
 		Composite cLeft = left.getBody();
 		left.setText(Messages.KonsZumVerrechnenView_allOpenCons); //$NON-NLS-1$
+		self.setTitleToolTip(Messages.KonsZumVerrechnenView_allOpenConsTooltip);
 		cLeft.setLayout(new GridLayout());
 		cv.create(vc, cLeft, SWT.NONE, tAll);
 		cv.getViewerWidget().setComparator(new KonsZumVerrechnenViewViewerComparator());
@@ -335,7 +336,7 @@ public class KonsZumVerrechnenView extends ViewPart implements ISaveablePart2 {
 								monitor.beginTask(Messages.KonsZumVerrechnenView_findCons, 100); //$NON-NLS-1$
 								monitor.subTask(Messages.KonsZumVerrechnenView_databaseRequest); //$NON-NLS-1$
 								String sql =
-									"SELECT distinct PATIENTID FROM FAELLE " + //$NON-NLS-1$
+									"SELECT distinct PATIENTID, BEHANDLUNGEN.FALLID FROM FAELLE " + //$NON-NLS-1$
 										"JOIN BEHANDLUNGEN ON BEHANDLUNGEN.FALLID=FAELLE.ID WHERE BEHANDLUNGEN.deleted='0' AND BEHANDLUNGEN.RECHNUNGSID is null "; //$NON-NLS-1$
 								if (CoreHub.acl.request(AccessControlDefaults.ACCOUNTING_GLOBAL) == false) {
 									sql += "AND BEHANDLUNGEN.MANDANTID=" //$NON-NLS-1$
@@ -346,9 +347,14 @@ public class KonsZumVerrechnenView extends ViewPart implements ISaveablePart2 {
 								monitor.subTask(Messages.KonsZumVerrechnenView_readIn); //$NON-NLS-1$
 								try {
 									while ((rs != null) && rs.next()) {
-										String s = rs.getString(1);
-										Patient p = Patient.load(s);
-										if (p.exists() && (tSelection.find(p, false) == null)) {
+										Patient p = Patient.load(rs.getString(1));
+										Fall fall = Fall.load(rs.getString(2));
+										if (fall.ignoreForBilling(fall.getAbrechnungsSystem())) {
+											System.out.println("...skip FindOpenCons "  + p.getPersonalia() + " for case " + fall.getAbrechnungsSystem());
+											continue;
+										}
+										if (p.exists() && // p.hatFaelleZumAbrechnen()  &&
+												(tSelection.find(p, false) == null)) {
 											new LazyTree(l, p, self);
 										}
 										monitor.worked(1);

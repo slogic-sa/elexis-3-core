@@ -92,7 +92,7 @@ public class Leistungscodes extends PreferencePage implements IWorkbenchPreferen
 	String[] tableCols = {
 		Messages.Leistungscodes_nameOfBillingSystem, Messages.Leistungscodes_billingSystem,
 		Messages.Leistungscodes_defaultOutput, Messages.Leistungscodes_multiplier,
-		Messages.Leistungscodes_useForBilling
+		Messages.Leistungscodes_forBilling
 	};
 	int[] tableWidths = {
 		60, 120, 120, 70, 30
@@ -152,6 +152,9 @@ public class Leistungscodes extends PreferencePage implements IWorkbenchPreferen
 			TableColumn tc = new TableColumn(table, SWT.NONE);
 			tc.setText(tableCols[i]);
 			tc.setWidth(tableWidths[i]);
+			if (i ==4) {
+				tc.setToolTipText(Messages.Leistungscodes_ignoreForBillingTooltip);
+			}
 		}
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
@@ -791,7 +794,8 @@ public class Leistungscodes extends PreferencePage implements IWorkbenchPreferen
 			new Label(upperPartComp, SWT.NONE).setText(""); //$NON-NLS-1$
 			cbIgnored = new Button(upperPartComp, SWT.CHECK);
 			cbIgnored.setLayoutData(SWTHelper.getFillGridData(1, true, 1, false));
-			cbIgnored.setText(Messages.Leistungscodes_useForBilling);
+			cbIgnored.setText(Messages.Leistungscodes_ignoreForBilling);
+			cbIgnored.setToolTipText(Messages.Leistungscodes_ignoreForBillingTooltip);
 
 			// *** separator
 			new Label(ret, SWT.SEPARATOR | SWT.HORIZONTAL).setLayoutData(SWTHelper.getFillGridData(

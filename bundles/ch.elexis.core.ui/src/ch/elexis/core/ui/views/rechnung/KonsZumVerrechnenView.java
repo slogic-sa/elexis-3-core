@@ -352,10 +352,9 @@ public class KonsZumVerrechnenView extends ViewPart implements ISaveablePart2 {
 										if (fall.ignoreForBilling(fall.getAbrechnungsSystem())) {
 											System.out.println("...skip FindOpenCons "  + p.getPersonalia() + " for case " + fall.getAbrechnungsSystem());
 											continue;
-										}
-										if (p.exists() && // p.hatFaelleZumAbrechnen()  &&
-												(tSelection.find(p, false) == null)) {
+										} else { if (p.exists() && (tSelection.find(p, false) == null)) {
 											new LazyTree(l, p, self);
+										}
 										}
 										monitor.worked(1);
 									}
@@ -386,8 +385,13 @@ public class KonsZumVerrechnenView extends ViewPart implements ISaveablePart2 {
 						while ((rs != null) && rs.next()) {
 							String s = rs.getString(1);
 							Fall f = Fall.load(s);
-							if (f != null && f.exists() && (tSelection.find(f, true) == null)) {
-								new LazyTree(l, f, this);
+							if (f != null  && f.exists() ) {
+								if (f.ignoreForBilling(f.getAbrechnungsSystem())) {
+									System.out.println("...skip FindOpenCons 2 for case " + f.getAbrechnungsSystem());
+								} else { if ((tSelection.find(f, true) == null)) {
+									new LazyTree(l, f, this);
+									}
+								}
 							}
 						}
 					} else if (cont instanceof Fall) {
@@ -400,8 +404,15 @@ public class KonsZumVerrechnenView extends ViewPart implements ISaveablePart2 {
 						while ((rs != null) && rs.next()) {
 							String s = rs.getString(1);
 							Konsultation b = Konsultation.load(s);
-							if (b.exists() && (tSelection.find(b, true) == null)) {
-								new LazyTree(l, b, this);
+							if (b.exists()) {
+								Fall f = b.getFall();
+								if (f.ignoreForBilling(f.getAbrechnungsSystem())) {
+									// TODO: Is this necessary, I never got here
+									System.out.println("...skip FindOpenCons 3 for case " + f.getAbrechnungsSystem());
+								} else { if (tSelection.find(b, true) == null) {
+										new LazyTree(l, b, this);
+									}
+								}
 							}
 						}
 					}

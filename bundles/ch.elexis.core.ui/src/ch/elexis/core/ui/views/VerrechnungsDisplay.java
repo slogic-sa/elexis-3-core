@@ -239,7 +239,9 @@ public class VerrechnungsDisplay extends Composite implements IUnlockable {
 	
 	private final class DropReceiver implements PersistentObjectDropTarget.IReceiver {
 		public void dropped(PersistentObject o, DropTargetEvent ev){
-			addPersistentObject(o);
+			if (accept(o)) {
+				addPersistentObject(o);
+			}
 		}
 		
 		public boolean accept(PersistentObject o){
@@ -248,6 +250,9 @@ public class VerrechnungsDisplay extends Composite implements IUnlockable {
 					return !((Artikel) o).isProduct();
 				}
 				if (o instanceof IVerrechenbar) {
+					return true;
+				}
+				if (o instanceof IDiagnose) {
 					return true;
 				}
 				if (o instanceof Leistungsblock) {

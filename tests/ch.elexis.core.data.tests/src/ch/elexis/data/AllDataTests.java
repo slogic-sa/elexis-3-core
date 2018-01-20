@@ -14,6 +14,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import ch.elexis.admin.RoleBasedAccessControlTest;
 import ch.elexis.data.service.internal.BriefDocumentStoreTest;
+import ch.elexis.data.util.Test_KontaktUtil;
 import ch.rgw.tools.JdbcLink;
 import ch.rgw.tools.JdbcLinkException;
 
@@ -23,7 +24,8 @@ import ch.rgw.tools.JdbcLinkException;
 	Test_Patient.class, Test_LabItem.class, Test_DBImage.class, Test_Query.class,
 	Test_Verrechnet.class, Test_Reminder.class, Test_StockService.class, Test_OrderService.class,
 	Test_Konsultation.class, RoleBasedAccessControlTest.class, Test_VkPreise.class,
-	Test_ZusatzAdresse.class, BriefDocumentStoreTest.class, Test_Rechnung.class, Test_User.class
+	Test_ZusatzAdresse.class, BriefDocumentStoreTest.class, Test_Rechnung.class, Test_User.class,
+	Test_KontaktUtil.class
 })
 public class AllDataTests {
 	

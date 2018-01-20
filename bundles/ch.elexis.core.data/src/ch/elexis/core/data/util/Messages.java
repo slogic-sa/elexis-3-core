@@ -25,6 +25,8 @@ public class Messages extends NLS {
 	// -------------------------------------------------------------------------------
 	// Created by JInto - www.guh-software.de
 	// Fri Dec 31 14:56:22 CET 2010
+	public static String KontakteView_SalutationM;
+	public static String KontakteView_SalutationF;
 	public static String DatabaseCleaner_NoCaseForBill;
 	public static String DatabaseCleaner_NoCaseForKons;
 	public static String DatabaseCleaner_NoMandatorForKons;

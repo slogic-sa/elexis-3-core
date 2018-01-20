@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.elexis.core.data.util.KontaktUtil;
+import ch.elexis.core.preferences.Messages;
 import ch.elexis.data.AbstractPersistentObjectTest;
 import ch.elexis.data.Kontakt;
 import ch.elexis.data.Patient;
@@ -29,7 +30,6 @@ public class Test_KontaktUtil extends AbstractPersistentObjectTest {
 		StringBuffer SelectedContactInfosChangedList = KontaktUtil.tidyContactInfo(male);
 		Assert.assertEquals("Facharzt FMH für",  male.get(Kontakt.FLD_NAME3));
 		Assert.assertNotEquals(0, SelectedContactInfosChangedList.toString().length());
-		System.out.println(male.get(Kontakt.FLD_ANSCHRIFT));
 		Assert.assertEquals("Prof.",  male.get(Kontakt.FLD_ANSCHRIFT));
 	}
 
@@ -75,8 +75,8 @@ public class Test_KontaktUtil extends AbstractPersistentObjectTest {
 		male.set(Patient.FLD_NAME3, "FLD_NAME3");
 		male.set(Patient.FLD_ANSCHRIFT, "prof.");
 		StringBuffer info = KontaktUtil.getContactInfo(male);
-		System.out.println(info);
-		Assert.assertEquals("Herr Max D'Andrea, Bemerkung, FLD_NAME3, 01.01.2000, Strasse, Plz Ort,  Telefon1, NatelNr NatelNr, Fax Fax, E-Mail",  info.toString());
+		Assert.assertEquals(ch.elexis.core.data.util.Messages.KontakteView_SalutationM +
+				" Max D'Andrea, Bemerkung, FLD_NAME3, 01.01.2000, Strasse, Plz Ort,  Telefon1, NatelNr NatelNr, Fax Fax, E-Mail",  info.toString());
 	}
 
 }

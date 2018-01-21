@@ -23,6 +23,7 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -59,6 +60,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import ch.elexis.core.data.beans.ContactBeanFactory;
 import ch.elexis.core.data.events.ElexisEventDispatcher;
 import ch.elexis.core.model.IContact;
+import ch.elexis.core.ui.contacts.actions.ContactActions;
 import ch.elexis.core.ui.contacts.views.comparator.ContactSelectorViewerComparator;
 import ch.elexis.core.ui.contacts.views.dnd.ContactSelectorDragListener;
 import ch.elexis.core.ui.contacts.views.dnd.ContactSelectorDropListener;
@@ -66,6 +68,7 @@ import ch.elexis.core.ui.contacts.views.filter.KontaktAnzeigeTextFieldViewerFilt
 import ch.elexis.core.ui.contacts.views.filter.KontaktAnzeigeTypViewerFilter;
 import ch.elexis.core.ui.contacts.views.provider.ContactSelectorObservableMapLabelProvider;
 import ch.elexis.core.ui.contacts.views.provider.TableDecoratingLabelProvider;
+import ch.elexis.core.ui.util.ViewMenus;
 import ch.elexis.data.Kontakt;
 import ch.elexis.data.Patient;
 import ch.elexis.data.Person;
@@ -87,9 +90,12 @@ public class ContactSelectorView extends ViewPart implements ITabbedPropertyShee
 	private KontaktAnzeigeTypViewerFilter filterAnzeigeTyp;
 	private KontaktAnzeigeTextFieldViewerFilter filterPositionTitle;
 	private LoadContactsRunnable loadContactsRunnable;
+	IAction tidySelectedAddressesAction, 
+	copySelectedContactInfosToClipboardAction,
+	copySelectedAddressesToClipboardAction;
 	
 	private Label lblStatus;
-	
+
 	public ContactSelectorView(){
 		contactList = new WritableList();
 		contentProvider = new ObservableListContentProvider();
@@ -157,6 +163,13 @@ public class ContactSelectorView extends ViewPart implements ITabbedPropertyShee
 		
 		getSite().registerContextMenu(menuManager, tableViewerContacts);
 		getSite().setSelectionProvider(tableViewerContacts);
+		
+		tidySelectedAddressesAction = ContactActions.getTidySelectedAddressesAction(tableViewerContacts);
+		copySelectedContactInfosToClipboardAction = ContactActions.getCopySelectedContactInfosToClipboardAction(tableViewerContacts);
+		copySelectedAddressesToClipboardAction = ContactActions.getCopySelectedAddressesToClipboardAction(tableViewerContacts);
+		menuManager.add(tidySelectedAddressesAction);
+		menuManager.add(copySelectedContactInfosToClipboardAction);
+		menuManager.add(copySelectedAddressesToClipboardAction);
 		
 		contactList.getRealm().asyncExec(loadContactsRunnable);
 		

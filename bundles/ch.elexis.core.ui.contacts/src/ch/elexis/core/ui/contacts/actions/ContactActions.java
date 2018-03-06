@@ -11,8 +11,12 @@
 
 package ch.elexis.core.ui.contacts.actions;
 
+import java.lang.reflect.InvocationTargetException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.dnd.Clipboard;
@@ -33,7 +37,12 @@ import ch.elexis.data.Patient;
 import ch.rgw.tools.StringTool;
 
 public class ContactActions {
+	private static int nrChanges;
 	private static Logger log = LoggerFactory.getLogger(ContactActions.class);
+	
+	private static void setNrChanges(int x){
+		nrChanges = x;
+	}
 	
 	/**
 	 * TODO: Should each field be capable of cleaning its content ? (Jörg Sigle & Niklaus Giger)
@@ -55,7 +64,6 @@ public class ContactActions {
 	 *            CommonViewer
 	 */
 	public static Action getTidySelectedAddressesAction(StructuredViewer viewer){
-		
 		/*
 		 * TODO: Should each field be capable of cleaning its content ? (Jörg Sigle &
 		 * Niklaus Giger) TODO: We must find a way to handle different languages +
@@ -78,98 +86,114 @@ public class ContactActions {
 					setImageDescriptor(Images.IMG_WIZARD.getImageDescriptor());
 					setToolTipText(Messages.KontakteView_tidySelectedAddresses);
 				}
-				
+
 				@Override
 				public void run(){
-					
+					log.info("tidySelectedAddresses started"); //$NON-NLS-1$
 					IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
 					Object[] sel = selection.toArray();
 					StringBuffer SelectedContactInfosChangedList = new StringBuffer();
-					int nrChanged = 0;
 					
-					if (sel != null && sel.length > 0) {
-						
-						for (int i = 0; i < sel.length; i++) {
-							
-							if (i % 100 == 0) {
-								log.debug(
-									"KontakteView tidySelectedAddressesAction.run Processing entry "
-										+ i + "...");
+					ProgressMonitorDialog dialog = new ProgressMonitorDialog(null);
+					try {
+						dialog.run(true, true, new IRunnableWithProgress() {
+							public void run(IProgressMonitor monitor){
+								String text = "Kontaktadressen putzen";
+								int nrChanged = 0;
+								if (sel != null && sel.length > 0) {
+									monitor.beginTask(text, sel.length);
+									for (int i = 0; i < sel.length; i++) {
+										if (monitor.isCanceled()) {
+											monitor.done();
+											log.debug("tidySelectedAddressesAction cancelled");
+											break;
+										}
+										if (i % 100 == 0) {
+											log.debug(
+												"KontakteView tidySelectedAddressesAction.run Processing entry "
+													+ i + "...");
+										}
+										monitor.worked(i);
+										monitor.setTaskName(String.format(
+											"%s von %s Kontaktaddressen geputzt", i, sel.length));
+										Kontakt k = getKontactFromSelected(sel[i]);
+										if (k == null) {
+											break;
+										}
+										StringBuffer changed = KontaktUtil.tidyContactInfo(k);
+										if (changed.length() > 0) {
+											nrChanged++;
+											setNrChanges(nrChanged);
+											SelectedContactInfosChangedList.append(changed);
+										}
+										nrChanges = nrChanged;
+									}
+								} // if sel not empty
 							}
-							;
-							
-							Kontakt k = getKontactFromSelected(sel[i]);
-							if (k == null) {
-								break;
-							}
-							StringBuffer changed = KontaktUtil.tidyContactInfo(k);
-							if (changed.length() > 0) {
-								nrChanged++;
-								SelectedContactInfosChangedList.append(changed);
-							}
-						}
-						
-						/*
-						 * In order to export the list of addresses that might warrant a manual review
-						 * of Postadresse to the clipboard, I have added the clipboard export routine
-						 * also used in the copyToClipboard... methods further below. If not for this
-						 * purpose, building up the stringsBuffer content would not have been required,
-						 * and neither would have been any kind of clipboard interaction.
-						 *
-						 * I would prefer to move the following code portions down behind the
-						 * "if sel not empty" block, so that (a) debugging output can be produced and
-						 * (b) the clipboard will be emptied when NO Contacts have been selected. I did
-						 * this to avoid the case where a user would assume they had selected some
-						 * address, copied data to the clipboard, and pasted them - and, even when they
-						 * erred about their selection, which was indeed empty, they would not
-						 * immediately notice that because some (old, unchanged) content would still
-						 * come out of the clipboard.
-						 * 
-						 * But if I do so, and there actually is no address selected, I get an error
-						 * window: Unhandled Exception ... not valid. So to avoid that message without
-						 * any further research (I need to get this work fast now), I move the code back
-						 * up and leave the clipboard unchanged for now, if no Contacts had been
-						 * selected to process.
-						 * 
-						 * (However, I may disable the toolbar icon / menu entry for this action in that
-						 * case later on.)
-						 */
-						
-						// Copy some generated object.toString() to the clipoard
-						if ((SelectedContactInfosChangedList != null)
-							&& (SelectedContactInfosChangedList.length() > 0)) {
-							
-							Clipboard clipboard = new Clipboard(UiDesk.getDisplay());
-							TextTransfer textTransfer = TextTransfer.getInstance();
-							Transfer[] transfers = new Transfer[] {
-								textTransfer
-							};
-							Object[] data = new Object[] {
-								SelectedContactInfosChangedList.toString()
-							};
-							clipboard.setContents(data, transfers);
-							clipboard.dispose();
-						}
-						
-					} // if sel not empty
+						});
+					} catch (InvocationTargetException | InterruptedException e) {
+						log.info("Error in tidySelectedAddresses" + e.getMessage()); //$NON-NLS-1$
+						e.printStackTrace();
+					}
 					
+					/*
+					 * In order to export the list of addresses that might warrant a manual review
+					 * of Postadresse to the clipboard, I have added the clipboard export routine
+					 * also used in the copyToClipboard... methods further below. If not for this
+					 * purpose, building up the stringsBuffer content would not have been required,
+					 * and neither would have been any kind of clipboard interaction.
+					 *
+					 * I would prefer to move the following code portions down behind the
+					 * "if sel not empty" block, so that (a) debugging output can be produced and
+					 * (b) the clipboard will be emptied when NO Contacts have been selected. I did
+					 * this to avoid the case where a user would assume they had selected some
+					 * address, copied data to the clipboard, and pasted them - and, even when they
+					 * erred about their selection, which was indeed empty, they would not
+					 * immediately notice that because some (old, unchanged) content would still
+					 * come out of the clipboard.
+					 * 
+					 * But if I do so, and there actually is no address selected, I get an error
+					 * window: Unhandled Exception ... not valid. So to avoid that message without
+					 * any further research (I need to get this work fast now), I move the code back
+					 * up and leave the clipboard unchanged for now, if no Contacts had been
+					 * selected to process.
+					 * 
+					 */
+					
+					// Copy some generated object.toString() to the clipoard
+					if ((SelectedContactInfosChangedList != null)
+						&& (SelectedContactInfosChangedList.length() > 0)) {
+						
+						Clipboard clipboard = new Clipboard(UiDesk.getDisplay());
+						TextTransfer textTransfer = TextTransfer.getInstance();
+						Transfer[] transfers = new Transfer[] {
+							textTransfer
+						};
+						Object[] data = new Object[] {
+							SelectedContactInfosChangedList.toString()
+						};
+						clipboard.setContents(data, transfers);
+						clipboard.dispose();
+					}
 					Kontakt k = getKontactFromSelected(selection.getFirstElement());
 					if (k != null) {
 						ElexisEventDispatcher.fireSelectionEvent(Kontakt.load(k.getId()));
 					}
 					
-					String msgTitle = String.format(
-						"%s von %s ausgewählten Adressen geputzt\nIn der Zwischenablage ist:\n",
-						nrChanged, sel.length);
+					String msgTitle =
+						String.format("Putzen von %s Kontaktadressen abgeschlossen", sel.length);
 					if (sel.length > 1) {
 						MessageDialog.openInformation(
 							PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-							msgTitle, String.format("Folgende Anpassungen wurden gemacht:\n%s",
-								SelectedContactInfosChangedList.toString()));
+							msgTitle,
+							String.format("%s der %s ausgewählten Kontakte wurden verändert.\n"
+								+ "Veränderte Einträge (vorher/nacher) wurden in die Zwischenablage kopiert.\n\n"
+								+ "Diese können Sie in eine Tabellenkalkulation (OpenOffice Calc oder Excel) einfügen.",
+								nrChanges, sel.length));
 					}
 					log.debug(msgTitle);
 				}
-			}; // tidySelectedAddressesAction = new Action()
+			};
 		return tidySelectedAddressesAction;
 	}
 	

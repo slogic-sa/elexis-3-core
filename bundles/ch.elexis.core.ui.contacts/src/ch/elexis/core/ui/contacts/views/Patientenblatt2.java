@@ -1111,13 +1111,13 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 						String thisAddressFLD_PHONE1 = (String) k.get(k.FLD_PHONE1);
 						if (!StringTool.isNothing(thisAddressFLD_PHONE1)) {
 							SelectedContactInfosText.append(
-								"," + StringTool.space + StringTool.space + thisAddressFLD_PHONE1);
+								"," + StringTool.space + thisAddressFLD_PHONE1);
 						}
 						
 						String thisAddressFLD_PHONE2 = (String) k.get(k.FLD_PHONE2);
 						if (!StringTool.isNothing(thisAddressFLD_PHONE2)) {
 							SelectedContactInfosText.append(
-								"," + StringTool.space + StringTool.space + thisAddressFLD_PHONE2);
+								"," + StringTool.space + thisAddressFLD_PHONE2);
 						}
 						
 						// See issue 9505: For the short version of contact data copied from

@@ -440,6 +440,7 @@ public class PatientenListeView extends ViewPart implements IActivationListener,
 				// selection further below.
 				// selectedPatInfosText.append("jsdebug: Sorry, your selection
 				// is empty.");
+				String delimiter = System.getProperty("line.separator");
 
 				if (sel != null && sel.length > 0) {
 					// selectedPatInfosText.setLength(0);
@@ -504,25 +505,25 @@ public class PatientenListeView extends ViewPart implements IActivationListener,
 								salutation = ""; //$NON-NLS-1$
 							}
 							selectedPatInfosText.append(salutation);
-							selectedPatInfosText.append(StringTool.space);
+							selectedPatInfosText.append(delimiter);
 
 							String titel = k.get(Person.TITLE); // $NON-NLS-1$
 							if (!StringTool.isNothing(titel)) {
-								selectedPatInfosText.append(titel).append(StringTool.space);
+								selectedPatInfosText.append(titel).append(delimiter);
 							}
 							// A comma between Family Name and Given Name would
 							// be generally
 							// helpful to reliably tell them apart:
-							// selectedPatInfosText.append(k.getName()+","+StringTool.space+k.getVorname());
+							// selectedPatInfosText.append(k.getName()+","+delimiter+k.getVorname());
 							// But Jürg Hamacher prefers this in his letters
 							// without a comma in
 							// between:
-							// selectedPatInfosText.append(k.getName()+StringTool.space+k.getVorname());
+							// selectedPatInfosText.append(k.getName()+delimiter+k.getVorname());
 							// Now, I only use a spacer, if the first field is
 							// not empty!
-							// SelectedContactInfosText.append(p.getVorname()+StringTool.space+p.getName());
+							// SelectedContactInfosText.append(p.getVorname()+delimiter+p.getName());
 							if (!StringTool.isNothing(k.getName())) {
-								selectedPatInfosText.append(k.getName() + StringTool.space);
+								selectedPatInfosText.append(k.getName() + delimiter);
 							}
 							if (!StringTool.isNothing(k.getVorname())) {
 								selectedPatInfosText.append(k.getVorname());
@@ -538,24 +539,24 @@ public class PatientenListeView extends ViewPart implements IActivationListener,
 								// But Jürg Hamacher prefers the patient
 								// information in his
 								// letters without that term:
-								selectedPatInfosText.append("," + StringTool.space
+								selectedPatInfosText.append(delimiter
 										+ new TimeTool(thisPatientBIRTHDATE).toString(TimeTool.DATE_GER));
 							}
 
 							String thisAddressFLD_STREET = k.get(Kontakt.FLD_STREET);
 							if (!StringTool.isNothing(thisAddressFLD_STREET)) {
-								selectedPatInfosText.append("," + StringTool.space + thisAddressFLD_STREET);
+								selectedPatInfosText.append(delimiter + thisAddressFLD_STREET);
 							}
 
 							String thisAddressFLD_COUNTRY = k.get(Kontakt.FLD_COUNTRY);
 							if (!StringTool.isNothing(thisAddressFLD_COUNTRY)) {
-								selectedPatInfosText.append("," + StringTool.space + thisAddressFLD_COUNTRY + "-");
+								selectedPatInfosText.append(delimiter + thisAddressFLD_COUNTRY + "-");
 							}
 
 							String thisAddressFLD_ZIP = k.get(Kontakt.FLD_ZIP);
 							if (!StringTool.isNothing(thisAddressFLD_ZIP)) {
 								if (StringTool.isNothing(thisAddressFLD_COUNTRY)) {
-									selectedPatInfosText.append("," + StringTool.space);
+									selectedPatInfosText.append(delimiter);
 								}
 								;
 								selectedPatInfosText.append(thisAddressFLD_ZIP);
@@ -575,13 +576,13 @@ public class PatientenListeView extends ViewPart implements IActivationListener,
 							String thisAddressFLD_PHONE1 = k.get(Kontakt.FLD_PHONE1);
 							if (!StringTool.isNothing(thisAddressFLD_PHONE1)) {
 								selectedPatInfosText
-										.append("," + StringTool.space + StringTool.space + thisAddressFLD_PHONE1);
+										.append(delimiter + thisAddressFLD_PHONE1);
 							}
 
 							String thisAddressFLD_PHONE2 = k.get(Kontakt.FLD_PHONE2);
 							if (!StringTool.isNothing(thisAddressFLD_PHONE2)) {
 								selectedPatInfosText
-										.append("," + StringTool.space + StringTool.space + thisAddressFLD_PHONE2);
+										.append(delimiter + thisAddressFLD_PHONE2);
 							}
 
 							// Skip Kontakt.FLD_MOBILEPHONE see #9505
@@ -591,14 +592,23 @@ public class PatientenListeView extends ViewPart implements IActivationListener,
 								// With a colon after the label:
 								// selectedPatInfosText.append(","+StringTool.space+k.FLD_FAX+":"+StringTool.space+thisAddressFLD_FAX);
 								// Without a colon after the label:
-								selectedPatInfosText.append("," + StringTool.space + Kontakt.FLD_FAX + StringTool.space
+								selectedPatInfosText.append(delimiter + Kontakt.FLD_FAX + StringTool.space
 										+ thisAddressFLD_FAX);
 							}
-
 							String thisAddressFLD_E_MAIL = k.get(Kontakt.FLD_E_MAIL);
 							if (!StringTool.isNothing(thisAddressFLD_E_MAIL)) {
-								selectedPatInfosText.append("," + StringTool.space + thisAddressFLD_E_MAIL);
+								selectedPatInfosText.append(delimiter + thisAddressFLD_E_MAIL);
 							}
+
+							String thisAddressFLD_WEBSITE = k.get(Kontakt.FLD_WEBSITE);
+							if (!StringTool.isNothing(thisAddressFLD_WEBSITE)) {
+								selectedPatInfosText.append(delimiter + thisAddressFLD_WEBSITE);
+							}
+							String thisAddressFLD_REMARK = k.get(Kontakt.FLD_REMARK);
+							if (!StringTool.isNothing(thisAddressFLD_REMARK)) {
+								selectedPatInfosText.append(delimiter + thisAddressFLD_REMARK);
+							}
+
 						} else {
 							selectedPatInfosText.append(
 									"Fehler: Bei diesem Patienten ist das Flag \"Person\" nicht gesetzt! Bitte korrigieren!\n");
@@ -721,7 +731,6 @@ public class PatientenListeView extends ViewPart implements IActivationListener,
 						// numbers shall be
 						// included
 						selectedAddressesText.append(k.getPostAnschriftPhoneFaxEmail(true, true));
-
 						// Add another empty line (or rather: paragraph), if at
 						// least one more
 						// address will follow.

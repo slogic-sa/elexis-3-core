@@ -109,11 +109,9 @@ public class ContactActions {
 											break;
 										}
 										if (i % 100 == 0) {
-											log.debug(
-												"KontakteView tidySelectedAddressesAction.run Processing entry "
-													+ i + "...");
+											log.debug("KontakteView tidySelectedAddressesAction.run Processing entry {} of {}  ", i, sel.length);
 										}
-										monitor.worked(i);
+										monitor.worked(1);
 										monitor.setTaskName(String.format(
 											"%s von %s Kontaktaddressen geputzt", i, sel.length));
 										Kontakt k = getKontactFromSelected(sel[i]);

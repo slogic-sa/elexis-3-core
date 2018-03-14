@@ -293,8 +293,12 @@ public class Messages extends NLS {
 	public static String KontakteView_delete;
 	public static String KontakteView_duplicate;
 	public static String KontakteView_tidySelectedAddresses;
-	public static String KontakteView_copySelectedContactInfosToClipboard;
-	public static String KontakteView_copySelectedAddressesToClipboard;
+	public static String Kontakte_copyDataWithoutMobile;
+	public static String Kontakte_copyDataWithoutMobileOneLine;
+	public static String Kontakte_copyDataWithMobileOneLine;
+	public static String Kontakte_copySelectedContactInfosToClipboard;
+	public static String Kontakte_copySelectedContactInfosToClipboardOneLine;
+	public static String Kontakte_copySelectedAddressesToClipboard;
 	public static String KontakteView_SalutationF;
 	public static String KontakteView_SalutationM;
 	public static String KontakteView_place;
@@ -398,8 +402,11 @@ public class Messages extends NLS {
 	public static String PatientenListeView_MissingRights;
 	public static String PatientenListeView_NewPatientAction;
 	public static String PatientenListeView_NewPationtToolTip;
-	public static String PatientenListeView_copySelectedPatInfosToClipboard;
-	public static String PatientenListeView_copySelectedAddressesToClipboard;
+	public static String Patient_copyPostalAddressToClipboard;
+	public static String Patient_copyPostalAddressToClipboardMenu;
+	public static String Patient_copySelectedPatInfosToClipboard;
+	public static String Patient_copySelectedAddressesToClipboard;
+	public static String Patient_copySelectedPatInfosToClipboardOneLine;
 	public static String PatientenListeView_PantientFirstName;
 	public static String PatientenListeView_PatientBirthdate;
 	public static String PatientenListeView_PatientName;

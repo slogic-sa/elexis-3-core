@@ -19,6 +19,9 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -29,6 +32,7 @@ import ch.elexis.admin.AccessControlDefaults;
 import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.data.events.ElexisEventDispatcher;
 import ch.elexis.core.data.status.ElexisStatus;
+import ch.elexis.core.ui.UiDesk;
 import ch.elexis.core.ui.actions.FlatDataLoader;
 import ch.elexis.core.ui.actions.GlobalActions;
 import ch.elexis.core.ui.actions.PersistentObjectLoader;
@@ -47,6 +51,7 @@ import ch.elexis.core.ui.util.viewers.SimpleWidgetProvider;
 import ch.elexis.core.ui.util.viewers.ViewerConfigurer;
 import ch.elexis.core.ui.util.viewers.ViewerConfigurer.ControlFieldListener;
 import ch.elexis.core.ui.views.Messages;
+import ch.elexis.data.BezugsKontakt;
 import ch.elexis.data.Kontakt;
 import ch.elexis.data.Organisation;
 import ch.elexis.data.PersistentObject;
@@ -61,8 +66,11 @@ public class KontakteView extends ViewPart implements ControlFieldListener, ISav
 
 	IAction dupKontakt, delKontakt, createKontakt, printList,
 		tidySelectedAddressesAction,
-		copySelectedContactInfosToClipboardAction,
-		copySelectedAddressesToClipboardAction;
+		copyKontactWithMobileOneLiner,
+		copyKontactWithMobile,
+		copyKontactWithoutMobileOneLiner,
+		copyKontactWithoutMobile,
+		copyPostalAddress;
 
 	PersistentObjectLoader loader;
 
@@ -93,17 +101,22 @@ public class KontakteView extends ViewPart implements ControlFieldListener, ISav
 		menu = new ViewMenus(getViewSite());
 
 		tidySelectedAddressesAction = ContactActions.getTidySelectedAddressesAction(cv.getViewerWidget());
-		copySelectedContactInfosToClipboardAction = ContactActions.getCopySelectedContactInfosToClipboardAction(cv.getViewerWidget());
-		copySelectedAddressesToClipboardAction = ContactActions.getCopySelectedAddressesToClipboardAction(cv.getViewerWidget());
+		copyKontactWithoutMobile = ContactActions.contactDataWithoutEmail(cv.getViewerWidget());
+		copyKontactWithoutMobileOneLiner = ContactActions.contactDataWithoutEmailAsOneliner(cv.getViewerWidget());
+		copyKontactWithMobile = ContactActions.contactDataWithEmail(cv.getViewerWidget());
+		copyKontactWithMobileOneLiner = ContactActions.contactDataWithEmailAsOneLiner(cv.getViewerWidget());
 		menu.createViewerContextMenu(cv.getViewerWidget(), delKontakt, dupKontakt);
 		menu.createMenu(tidySelectedAddressesAction);
-		menu.createMenu(copySelectedContactInfosToClipboardAction);
-		menu.createMenu(copySelectedAddressesToClipboardAction);
+		menu.createMenu(copyKontactWithoutMobileOneLiner);
+		menu.createMenu(copyKontactWithoutMobile);
+		menu.createMenu(copyKontactWithMobileOneLiner);
+		menu.createMenu(copyKontactWithMobile);
+		menu.createMenu(copyPostalAddress);
 		menu.createMenu(printList);
 		
 		menu.createToolbar(tidySelectedAddressesAction);
-		menu.createToolbar(copySelectedContactInfosToClipboardAction);
-		menu.createToolbar(copySelectedAddressesToClipboardAction);
+		menu.createToolbar(copyKontactWithoutMobileOneLiner);
+		menu.createToolbar(copyKontactWithoutMobile);
 		menu.createToolbar(printList);
 		vc.getContentProvider().startListening();
 		vc.getControlFieldProvider().addChangeListener(this);
@@ -270,6 +283,34 @@ public class KontakteView extends ViewPart implements ControlFieldListener, ISav
 					gpl.open();
 				}
 			}
+		};
+		copyPostalAddress = new Action(Messages.Patient_copyPostalAddressToClipboard) {
+			{
+				setImageDescriptor(Images.IMG_CLIPBOARD.getImageDescriptor());
+				setToolTipText(Messages.Patient_copyPostalAddressToClipboard);
+			}
+			@Override
+			public void run(){
+				Object[] sel = cv.getSelection();
+				if (sel != null && sel.length > 0) {
+					Kontakt k = (Kontakt) sel[0];
+					if (k == null) {
+						return;
+					}
+					StringBuffer selectedAddressesText = new StringBuffer();
+					selectedAddressesText.append(k.getPostAnschriftPhoneFaxEmail(true, false));
+					Clipboard clipboard = new Clipboard(UiDesk.getDisplay());
+					TextTransfer textTransfer = TextTransfer.getInstance();
+					Transfer[] transfers = new Transfer[] {
+						textTransfer
+					};
+					Object[] data = new Object[] {
+						selectedAddressesText.toString()
+					};
+					clipboard.setContents(data, transfers);
+					clipboard.dispose();
+				}
+			};
 		};
 	}
 

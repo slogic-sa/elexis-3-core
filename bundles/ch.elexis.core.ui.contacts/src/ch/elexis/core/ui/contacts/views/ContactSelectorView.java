@@ -91,8 +91,11 @@ public class ContactSelectorView extends ViewPart implements ITabbedPropertyShee
 	private KontaktAnzeigeTextFieldViewerFilter filterPositionTitle;
 	private LoadContactsRunnable loadContactsRunnable;
 	IAction tidySelectedAddressesAction, 
-	copySelectedContactInfosToClipboardAction,
-	copySelectedAddressesToClipboardAction;
+	copyKontactWithMobileOneLiner,
+	copyKontactWithMobile,
+	copyKontactWithoutMobileOneLiner,
+	copyKontactWithoutMobile,
+	copyPostalAddress;
 	
 	private Label lblStatus;
 
@@ -165,11 +168,18 @@ public class ContactSelectorView extends ViewPart implements ITabbedPropertyShee
 		getSite().setSelectionProvider(tableViewerContacts);
 		
 		tidySelectedAddressesAction = ContactActions.getTidySelectedAddressesAction(tableViewerContacts);
-		copySelectedContactInfosToClipboardAction = ContactActions.getCopySelectedContactInfosToClipboardAction(tableViewerContacts);
-		copySelectedAddressesToClipboardAction = ContactActions.getCopySelectedAddressesToClipboardAction(tableViewerContacts);
+		copyKontactWithMobileOneLiner = ContactActions.contactDataWithEmailAsOneLiner(tableViewerContacts);
+		copyKontactWithMobile = ContactActions.contactDataWithEmail(tableViewerContacts);
+		copyKontactWithoutMobileOneLiner = ContactActions.contactDataWithoutEmailAsOneliner(tableViewerContacts);
+		copyKontactWithoutMobile = ContactActions.contactDataWithoutEmail(tableViewerContacts);
+		copyPostalAddress = ContactActions.postalAddress(tableViewerContacts);
+
 		menuManager.add(tidySelectedAddressesAction);
-		menuManager.add(copySelectedContactInfosToClipboardAction);
-		menuManager.add(copySelectedAddressesToClipboardAction);
+		menuManager.add(copyKontactWithMobileOneLiner);
+		menuManager.add(copyKontactWithMobile);
+		menuManager.add(copyKontactWithoutMobileOneLiner);
+		menuManager.add(copyKontactWithoutMobile);
+		menuManager.add(copyPostalAddress);
 		
 		contactList.getRealm().asyncExec(loadContactsRunnable);
 		

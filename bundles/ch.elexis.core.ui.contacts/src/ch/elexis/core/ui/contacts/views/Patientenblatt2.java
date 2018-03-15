@@ -76,7 +76,6 @@ import ch.elexis.core.ui.Hub;
 import ch.elexis.core.ui.UiDesk;
 import ch.elexis.core.ui.actions.GlobalActions;
 import ch.elexis.core.ui.actions.RestrictedAction;
-import ch.elexis.core.ui.contacts.actions.ContactActions;
 import ch.elexis.core.ui.contacts.dialogs.BezugsKontaktAuswahl;
 import ch.elexis.core.ui.dialogs.AddBuchungDialog;
 import ch.elexis.core.ui.dialogs.AnschriftEingabeDialog;
@@ -900,6 +899,8 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 				StringBuffer selectedAddressesText = new StringBuffer();
 				if (sel == null) {
 					selectedAddressesText.append("Keine Bezugsadresse ausgewählt");
+					SWTHelper.alert(selectedAddressesText.toString(),
+						"Eine Postanschrift kann nur ausgegeben werden, wenn Sie zuerst einen Patienten und eine Bezugsadresse ausgewählt haben.");
 				} else {
 					Kontakt k = sel.getBezugsKontakt();
 					selectedAddressesText.append(k.getPostAnschriftPhoneFaxEmail(true, false));

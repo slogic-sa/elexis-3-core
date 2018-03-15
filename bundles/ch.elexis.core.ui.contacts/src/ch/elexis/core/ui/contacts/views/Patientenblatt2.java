@@ -896,21 +896,24 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 			}
 			@Override
 			public void run(){
+				BezugsKontakt sel = (BezugsKontakt) inpZusatzAdresse.getSelection();
 				StringBuffer selectedAddressesText = new StringBuffer();
-				Kontakt k = actPatient;
-				if (k != null) {
+				if (sel == null) {
+					selectedAddressesText.append("Keine Bezugsadresse ausgewählt");
+				} else {
+					Kontakt k = sel.getBezugsKontakt();
 					selectedAddressesText.append(k.getPostAnschriftPhoneFaxEmail(true, false));
-					Clipboard clipboard = new Clipboard(UiDesk.getDisplay());
-					TextTransfer textTransfer = TextTransfer.getInstance();
-					Transfer[] transfers = new Transfer[] {
-						textTransfer
-					};
-					Object[] data = new Object[] {
-						selectedAddressesText.toString()
-					};
-					clipboard.setContents(data, transfers);
-					clipboard.dispose();
 				}
+				Clipboard clipboard = new Clipboard(UiDesk.getDisplay());
+				TextTransfer textTransfer = TextTransfer.getInstance();
+				Transfer[] transfers = new Transfer[] {
+					textTransfer
+				};
+				Object[] data = new Object[] {
+					selectedAddressesText.toString()
+				};
+				clipboard.setContents(data, transfers);
+				clipboard.dispose();
 			};
 		};
 	}

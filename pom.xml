@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.elexis.core</groupId>
 	<artifactId>elexis-3-core</artifactId>
-	<version>3.5.0-SNAPSHOT</version>
+	<version>3.6.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Elexis-Core</name>
 
@@ -374,6 +374,37 @@ if ( System.getProperty("git_branch") == null && project.name == 'ch.elexis.core
   </plugins>
   <pluginManagement>
     <plugins>
+    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.gmavenplus
+										</groupId>
+										<artifactId>
+											gmavenplus-plugin
+										</artifactId>
+										<versionRange>
+											[1.5,)
+										</versionRange>
+										<goals>
+											<goal>execute</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
       <plugin>
         <!-- Use compiler plugin with tycho as the adapter to the JDT compiler. -->
         <artifactId>maven-compiler-plugin </artifactId>
@@ -448,7 +479,11 @@ Without it Maven would put two versions of each class file into the jars
           <strictBinIncludes>false</strictBinIncludes>
           <format>yyyyMMdd-HHmm</format>
           <timestampProvider>jgit</timestampProvider>
-          <jgit.ignore>pom.xml</jgit.ignore>
+           <timestampProvider>jgit</timestampProvider>
+           <jgit.ignore>
+             pom.xml
+             .polyglot.build.properties
+           </jgit.ignore>
           <jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
         </configuration>
       </plugin>

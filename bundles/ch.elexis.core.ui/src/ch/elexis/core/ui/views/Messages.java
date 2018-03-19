@@ -295,6 +295,7 @@ public class Messages extends NLS {
 	public static String KontakteView_tidySelectedAddresses;
 	public static String Kontakte_copyDataWithoutMobile;
 	public static String Kontakte_copyDataWithoutMobileOneLine;
+	public static String Kontakte_copyDataWithMobile;
 	public static String Kontakte_copyDataWithMobileOneLine;
 	public static String Kontakte_copySelectedContactInfosToClipboard;
 	public static String Kontakte_copySelectedContactInfosToClipboardOneLine;

@@ -126,6 +126,8 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 	private final FormToolkit tk;
 	private InputPanel ipp;
 	private IAction removeZAAction, showZAAction, showBKAction,
+			copyKontactWithoutMobileOneLiner,
+			copyKontactWithoutMobile,
 			copyKontactWithMobileOneLiner,
 			copyKontactWithMobile,
 			copyPostalAddress,
@@ -135,6 +137,7 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 	public final static String CFG_BEZUGSKONTAKTTYPEN = "views/patientenblatt/Bezugskontakttypen"; //$NON-NLS-1$
 	public final static String CFG_EXTRAFIELDS = "views/patientenblatt/extrafelder"; //$NON-NLS-1$
 	public final static String SPLITTER = "#!>"; //$NON-NLS-1$
+	private final static String KEIN_BEZUGS_KONTAKT = "Kein Bezugskontakt ausgewählt";
 	
 	@SuppressWarnings("unchecked")
 	private final List<IViewContribution> detailComposites = Extensions.getClasses(VIEWCONTRIBUTION,
@@ -584,6 +587,8 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 		
 		// inpZusatzAdresse.setMenu(createZusatzAdressMenu());
 		inpZusatzAdresse.setMenu(removeZAAction, showZAAction, showBKAction,
+			copyKontactWithoutMobileOneLiner,
+			copyKontactWithoutMobile,
 			copyKontactWithMobileOneLiner,
 			copyKontactWithMobile,
 			copyPostalAddress);
@@ -700,6 +705,8 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 		viewmenu = new ViewMenus(viewsite);
 		viewmenu.createMenu(GlobalActions.printEtikette, GlobalActions.printAdresse,
 			GlobalActions.printBlatt, GlobalActions.showBlatt, GlobalActions.printRoeBlatt,
+			copyKontactWithoutMobileOneLiner,
+			copyKontactWithoutMobile,
 			copyKontactWithMobileOneLiner,
 			copyKontactWithMobile,
 			copyPostalAddress);
@@ -866,27 +873,59 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 				}
 			}
 		};
-		copyKontactWithMobileOneLiner = new Action(Messages.Patient_copySelectedPatInfosToClipboardOneLine) {
-					{
-						setImageDescriptor(Images.IMG_CLIPBOARD.getImageDescriptor());
-						setToolTipText(Messages.Patient_copySelectedPatInfosToClipboardOneLine);
-					}
-					@Override
-					public void run(){
-						contactInfoToClipboard(actPatient, true, false);
-					};
-				};
+		copyKontactWithoutMobileOneLiner = new Action(Messages.Kontakte_copyDataWithoutMobileOneLine) {
+			{
+				setImageDescriptor(Images.IMG_CLIPBOARD.getImageDescriptor());
+				setToolTipText(Messages.Kontakte_copyDataWithoutMobileOneLine);
+			}
+			@Override
+			public void run(){
+				Kontakt k = getAndCheckBezugskontakt();
+				if (k != null) {
+					contactInfoToClipboard(k, false, false);
+				}
+			};
+		};
+		copyKontactWithoutMobile = new Action(Messages.Kontakte_copyDataWithoutMobile) {
+			{
+				setImageDescriptor(Images.IMG_CLIPBOARD.getImageDescriptor());
+				setToolTipText(Messages.Kontakte_copyDataWithoutMobile);
+			}
+			@Override
+			public void run(){
+				Kontakt k = getAndCheckBezugskontakt();
+				if (k != null) {
+					contactInfoToClipboard(k, false, true);
+				}
+			};
+		};
+		copyKontactWithMobileOneLiner = new Action(Messages.Kontakte_copyDataWithMobileOneLine) {
+			{
+				setImageDescriptor(Images.IMG_CLIPBOARD.getImageDescriptor());
+				setToolTipText(Messages.Kontakte_copyDataWithMobileOneLine);
+			}
+			@Override
+			public void run(){
+				Kontakt k = getAndCheckBezugskontakt();
+				if (k != null) {
+					contactInfoToClipboard(k, true, false);
+				}
+			};
+		};
 
-		copyKontactWithMobile = new Action(Messages.Patient_copySelectedPatInfosToClipboard) {
-					{
-						setImageDescriptor(Images.IMG_CLIPBOARD.getImageDescriptor());
-						setToolTipText(Messages.Patient_copySelectedPatInfosToClipboard);
-					}
-					@Override
-					public void run(){
-						contactInfoToClipboard(actPatient, true, true);
-					};
-				};
+		copyKontactWithMobile = new Action(Messages.Kontakte_copyDataWithMobile) {
+			{
+				setImageDescriptor(Images.IMG_CLIPBOARD.getImageDescriptor());
+				setToolTipText(Messages.Kontakte_copyDataWithMobile);
+			}
+			@Override
+			public void run(){
+				Kontakt k = getAndCheckBezugskontakt();
+				if (k != null) {
+					contactInfoToClipboard(k, true, true);
+				}
+			};
+		};
 
 		copyPostalAddress = new Action(Messages.Patient_copyPostalAddressToClipboard) {
 			{
@@ -895,15 +934,10 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 			}
 			@Override
 			public void run(){
-				BezugsKontakt sel = (BezugsKontakt) inpZusatzAdresse.getSelection();
-				StringBuffer selectedAddressesText = new StringBuffer();
-				if (sel == null) {
-					selectedAddressesText.append("Keine Bezugsadresse ausgewählt");
-					SWTHelper.alert(selectedAddressesText.toString(),
-						"Eine Postanschrift kann nur ausgegeben werden, wenn Sie zuerst einen Patienten und eine Bezugsadresse ausgewählt haben.");
-				} else {
-					Kontakt k = sel.getBezugsKontakt();
-					selectedAddressesText.append(k.getPostAnschriftPhoneFaxEmail(true, false));
+				Kontakt k = getAndCheckBezugskontakt();
+				String postalAddress = KEIN_BEZUGS_KONTAKT;
+				if (k != null) {
+					postalAddress = k.getPostAnschriftPhoneFaxEmail(true, false);
 				}
 				Clipboard clipboard = new Clipboard(UiDesk.getDisplay());
 				TextTransfer textTransfer = TextTransfer.getInstance();
@@ -911,7 +945,7 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 					textTransfer
 				};
 				Object[] data = new Object[] {
-					selectedAddressesText.toString()
+					postalAddress.toString()
 				};
 				clipboard.setContents(data, transfers);
 				clipboard.dispose();
@@ -919,6 +953,16 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 		};
 	}
 	
+	private Kontakt getAndCheckBezugskontakt() {
+		BezugsKontakt sel = (BezugsKontakt) inpZusatzAdresse.getSelection();
+		if (sel == null) {
+			SWTHelper.alert(KEIN_BEZUGS_KONTAKT,
+				"Kontaktdaten/Postanschrift kann nur ausgegeben werden, wenn Sie zuerst einen Patienten und einen Bezugskontakt ausgewählt haben.");
+			return null;
+		} else {
+			return sel.getBezugsKontakt();
+		}
+	}
 	@Override
 	public void setUnlocked(boolean unlocked){
 		bLocked = !unlocked;
@@ -1087,24 +1131,29 @@ public class Patientenblatt2 extends Composite implements IUnlockable {
 				SelectedContactInfosText.append(
 					"," + StringTool.space + thisAddressFLD_PHONE2);
 			}
-			
+			if (withMobileNumber) {
+				String thisAddressFLD_MOBILE= (String) patient.get(patient.FLD_MOBILEPHONE);
+				if (!StringTool.isNothing(thisAddressFLD_MOBILE)) {
+					SelectedContactInfosText.append("," + StringTool.space + thisAddressFLD_MOBILE);
+				}
+			}
 			// See issue 9505: For the short version of contact data copied from
 			// the list of people linked to a patient (usually, his/her physicians etc.),
 			// we want NEITHER the salutation (Herr/Frau) NOR the mobile phone number appear.
-			
 			String thisAddressFLD_FAX = (String) patient.get(patient.FLD_FAX);
 			if (!StringTool.isNothing(thisAddressFLD_FAX)) {
-				// With a colon after the label:
-				// SelectedContactInfosText.append(","+StringTool.space+k.FLD_FAX+":"+StringTool.space+thisAddressFLD_FAX);
-				// Without a colon after the label:
 				SelectedContactInfosText.append("," + StringTool.space + patient.FLD_FAX
 					+ StringTool.space + thisAddressFLD_FAX);
 			}
-			
 			String thisAddressFLD_E_MAIL = (String) patient.get(patient.FLD_E_MAIL);
 			if (!StringTool.isNothing(thisAddressFLD_E_MAIL)) {
 				SelectedContactInfosText
 					.append("," + StringTool.space + thisAddressFLD_E_MAIL);
+			}
+			String thisAddressFLD_WEB = (String) patient.get(patient.FLD_WEBSITE);
+			if (!StringTool.isNothing(thisAddressFLD_WEB)) {
+				SelectedContactInfosText
+					.append("," + StringTool.space + thisAddressFLD_WEB);
 			}
 			String result = SelectedContactInfosText.toString().replaceAll("[\\r\\n]\\n", StringTool.lf); //$NON-NLS-1$
 			if (multiline) {

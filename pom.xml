@@ -23,7 +23,7 @@
 		<tycho.version>1.0.0</tycho.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
-        <git.target.branch>master</git.target.branch>
+        <git.target.branch>3.6</git.target.branch>
         <git.core.branch>${git.target.branch}</git.core.branch>
 	</properties>
 
@@ -75,6 +75,9 @@
 						<artifactId>target-platform-configuration</artifactId>
 						<version>${tycho.version}</version>
 						<configuration>
+							<dependency-resolution>
+              					<optionalDependencies>ignore</optionalDependencies>
+              				</dependency-resolution>
 							<environments>
 								<environment>
 									<os>win32</os>
@@ -102,6 +105,9 @@
 						<artifactId>target-platform-configuration</artifactId>
 						<version>${tycho.version}</version>
 						<configuration>
+							<dependency-resolution>
+              					<optionalDependencies>ignore</optionalDependencies>
+              				</dependency-resolution>
 							<environments>
 								<environment>
 									<os>win32</os>
@@ -129,6 +135,9 @@
 						<artifactId>target-platform-configuration</artifactId>
 						<version>${tycho.version}</version>
 						<configuration>
+							<dependency-resolution>
+              					<optionalDependencies>ignore</optionalDependencies>
+              				</dependency-resolution>
 							<executionEnvironment>JavaSE-1.8</executionEnvironment>
 							<environments>
 								<environment>
@@ -157,6 +166,9 @@
 						<artifactId>target-platform-configuration</artifactId>
 						<version>${tycho.version}</version>
 						<configuration>
+							<dependency-resolution>
+              					<optionalDependencies>ignore</optionalDependencies>
+              				</dependency-resolution>
 							<environments>
 								<environment>
 									<os>linux</os>
@@ -183,6 +195,9 @@
 						<artifactId>target-platform-configuration</artifactId>
 						<version>${tycho.version}</version>
 						<configuration>
+							<dependency-resolution>
+              					<optionalDependencies>ignore</optionalDependencies>
+              				</dependency-resolution>
 							<environments>
 								<environment>
 									<environment>
@@ -211,6 +226,9 @@
 						<artifactId>target-platform-configuration</artifactId>
 						<version>${tycho.version}</version>
 						<configuration>
+							<dependency-resolution>
+              					<optionalDependencies>ignore</optionalDependencies>
+              				</dependency-resolution>
 							<environments>
 								<environment>
 									<os>linux</os>
@@ -333,9 +351,9 @@ if ( System.getProperty("git_branch") == null && project.name == 'ch.elexis.core
           <encoding>UTF-8</encoding>
           <consoleOutput>false</consoleOutput>
           <failsOnError>false</failsOnError>
-          <headerLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/master/ch.elexis.core.releng/epl-v10.html</headerLocation>
-          <configLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/master/ch.elexis.core.releng/checkstyle.xml</configLocation>
-          <suppressionsLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/master/ch.elexis.core.releng/checkstyle-suppressions.xml</suppressionsLocation>
+          <headerLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/3.6/ch.elexis.core.releng/epl-v10.html</headerLocation>
+          <configLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/3.6/ch.elexis.core.releng/checkstyle.xml</configLocation>
+          <suppressionsLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/3.6/ch.elexis.core.releng/checkstyle-suppressions.xml</suppressionsLocation>
         </configuration>
 			<version>2.17</version>
 		</plugin>
@@ -449,6 +467,9 @@ Without it Maven would put two versions of each class file into the jars
         <artifactId>target-platform-configuration</artifactId>
         <version>${tycho.version}</version>
         <configuration>
+        	<dependency-resolution>
+            	<optionalDependencies>ignore</optionalDependencies>
+            </dependency-resolution>
           <executionEnvironment>JavaSE-1.8</executionEnvironment>
         </configuration>
       </plugin>
@@ -545,9 +566,9 @@ Without it Maven would put two versions of each class file into the jars
 					<encoding>UTF-8</encoding>
 					<consoleOutput>false</consoleOutput>
 					<failsOnError>false</failsOnError>
-					<headerLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/master/ch.elexis.core.releng/epl-v10.html</headerLocation>
-					<configLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/master/ch.elexis.core.releng/checkstyle.xml</configLocation>
-					<suppressionsLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/master/ch.elexis.core.releng/checkstyle-suppressions.xml</suppressionsLocation>
+					<headerLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/3.6/ch.elexis.core.releng/epl-v10.html</headerLocation>
+					<configLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/3.6/ch.elexis.core.releng/checkstyle.xml</configLocation>
+					<suppressionsLocation>https://raw.githubusercontent.com/elexis/elexis-3-core/3.6/ch.elexis.core.releng/checkstyle-suppressions.xml</suppressionsLocation>
 				</configuration>
 				<reportSets>
 					<reportSet>

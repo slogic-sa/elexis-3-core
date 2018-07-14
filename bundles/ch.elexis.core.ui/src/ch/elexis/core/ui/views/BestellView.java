@@ -51,10 +51,12 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
+import org.slf4j.LoggerFactory;
 
 import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.data.activator.CoreHub;
 import ch.elexis.core.data.util.Extensions;
+import ch.elexis.core.model.IStockEntry;
 import ch.elexis.core.ui.UiDesk;
 import ch.elexis.core.ui.actions.GlobalActions;
 import ch.elexis.core.ui.constants.ExtensionPointConstantsUi;
@@ -216,6 +218,15 @@ public class BestellView extends ViewPart implements ISaveablePart2 {
 							// TODO user message?
 							return;
 						}
+						// use StockEntry if possible
+						if (CoreHub.getStockService() != null) {
+							IStockEntry se = CoreHub.getStockService()
+								.findPreferredStockEntryForArticle(obj, null);
+							if (se != null) {
+								stockEntriesToOrder.add((StockEntry) se);
+								continue;
+							}
+						}
 						// SINGLE SHOT ORDER
 						actBestellung.addBestellungEntry((Artikel) dropped, null, null, 1);
 					}
@@ -374,7 +385,14 @@ public class BestellView extends ViewPart implements ISaveablePart2 {
 					StockEntry.FLD_MIN);
 				List<StockEntry> stockEntries = qbe.execute();
 				for (StockEntry se : stockEntries) {
-					CoreHub.getOrderService().addRefillForStockEntryToOrder(se, actBestellung);
+					if (se.getArticle() != null) {
+						CoreHub.getOrderService().addRefillForStockEntryToOrder(se, actBestellung);
+					} else {
+						LoggerFactory.getLogger(getClass())
+							.warn("Could not resolve article " + se.get(StockEntry.FLD_ARTICLE_TYPE)
+								+ se.get(StockEntry.FLD_ARTICLE_ID) + " of stock entry "
+								+ se.getId());
+					}
 				}
 				tv.refresh(true);
 			}

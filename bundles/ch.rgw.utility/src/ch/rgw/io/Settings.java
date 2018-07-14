@@ -15,9 +15,13 @@ package ch.rgw.io;
 import java.awt.Rectangle;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +50,7 @@ public abstract class Settings implements Serializable, Cloneable {
 	protected Hashtable node;
 	private volatile String path = null;
 	private volatile boolean dirty = false;
+	private ISettingChangedListener settingChangedListener = null;
 	// protected String name;
 	
 	static {
@@ -66,6 +71,14 @@ public abstract class Settings implements Serializable, Cloneable {
 	protected Settings(Hashtable n){
 		node = (n == null) ? new Hashtable() : n;
 		dirty = true;
+	}
+	
+	public void setSettingChangedListener(ISettingChangedListener settingChangedListener){
+		this.settingChangedListener = settingChangedListener;
+	}
+	
+	public ISettingChangedListener getSettingChangedListener(){
+		return settingChangedListener;
 	}
 	
 	protected void cleaned(){
@@ -125,8 +138,10 @@ public abstract class Settings implements Serializable, Cloneable {
 		}
 		Hashtable subnode = findParent(key, true);
 		dirty = true;
+		if(settingChangedListener!=null) {
+			settingChangedListener.settingChanged(key, value);
+		}
 		return (subnode.put(getLeaf(key), value) != null);
-		
 	}
 	
 	private String getLeaf(String key){
@@ -372,6 +387,9 @@ public abstract class Settings implements Serializable, Cloneable {
 	public void remove(String key){
 		Hashtable p = findParent(key, false);
 		if (p != null) {
+			if(settingChangedListener!=null) {
+				settingChangedListener.settingRemoved(key);
+			}
 			p.remove(getLeaf(key));
 			dirty = true;
 		}
@@ -456,8 +474,8 @@ public abstract class Settings implements Serializable, Cloneable {
 		if (r.length != 4)
 			return null;
 		
-		return new Rectangle(Integer.parseInt(r[0]), Integer.parseInt(r[1]),
-			Integer.parseInt(r[2]), Integer.parseInt(r[3]));
+		return new Rectangle(Integer.parseInt(r[0]), Integer.parseInt(r[1]), Integer.parseInt(r[2]),
+			Integer.parseInt(r[3]));
 	}
 	
 	public boolean get(String key, boolean defvalue){
@@ -529,6 +547,39 @@ public abstract class Settings implements Serializable, Cloneable {
 			}
 		}
 		
+	}
+	
+	/**
+	 * 
+	 * @param key
+	 * @return the results or an empty list
+	 * @since 3.6
+	 */
+	public List<String> getAsList(String key){
+		String string = get(key, (String) null);
+		if (string != null) {
+			String[] split = string.split(",");
+			if (split != null && split.length > 0) {
+				return Arrays.asList(split);
+			}
+		}
+		return Collections.emptyList();
+	}
+	
+	/**
+	 * 
+	 * @param key
+	 * @param values an empty collection will remove the resp. key
+	 * @since 3.6
+	 */
+	public void setAsList(String key, List<String> values){
+		Optional<String> value =
+			values.stream().map(o -> o.toString()).reduce((u, t) -> u + "," + t);
+		if (value.isPresent()) {
+			set(key, value.get());
+		} else {
+			remove(key);
+		}
 	}
 	
 }

@@ -5,7 +5,32 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 
 	public static final String BUNDLE_NAME = "ch.elexis.core.l10n.messages";
-    public static String ArticleDefaultSignatureComposite_applicationInstruction;
+	public static String AddressType_SECONDARY_RESIDENCE;
+	public static String AddressType_HOLIDAY_HOME;
+	public static String AddressType_PRINCIPAL_RESIDENCE;
+	public static String AddressType_PLACE_OF_RESIDENCE;
+	public static String AddressType_EMPLOYER;
+	public static String AddressType_FAMILY_FRIENDS;
+	public static String AddressType_ATTACHMENT_FIGURE;
+	public static String AddressType_PRISON;
+	public static String AddressType_NURSING_HOME;
+	public static String AddressType_OTHER;
+
+	public static String RelationshipType_A_GENERIC;
+	public static String RelationshipType_BUSINESS_EMPLOYER;
+	public static String RelationshipType_BUSINESS_EMPLOYEE;
+	public static String RelationshipType_FAMILY_PARENT;
+	public static String RelationshipType_FAMILY_CHILD;
+	public static String RelationshipType_FAMILY_GUARDIAN;
+	public static String RelationshipType_FAMILY_ICE;
+	public static String RelationshipType_FAMILY_ALTERNATIVE;
+	public static String RelationshipType_WELFARE_GENERAL_PRACTITIONER;
+	public static String RelationshipType_WELFARE_PATIENT;
+	public static String RelationshipType_WELFARE_CONSULTANT;
+	public static String RelationshipType_WELFARE_INSURER;
+	public static String RelationshipType_WELFARE_INSUREE;
+	
+	public static String ArticleDefaultSignatureComposite_applicationInstruction;
 	public static String ArticleDefaultSignatureComposite_dispensation;
 	public static String ArticleDefaultSignatureComposite_dosage;
 	public static String ArticleDefaultSignatureComposite_evening;
@@ -61,6 +86,7 @@ public class Messages extends NLS {
 	public static String BillSummary_receiver;
 	public static String BillSummary_state;
 	public static String BillSummary_total;
+	public static String ContactNotAvailable;
 	public static String DefaultOutputter_defaultOutputForCase;
 	public static String DefaultOutputter_useIdividualPlugins;
 	public static String ErstelleRnnCommand_BadCaseDefinition;
@@ -193,6 +219,14 @@ public class Messages extends NLS {
 	public static String RnActions_deleteBillAction;
 	public static String RnActions_edirCaseAction;
 	public static String RnActions_expandAllAction;
+	public static String RnActions_exportListDirName;
+	public static String RnActions_exportListDirNameMissingCaption;
+	public static String RnActions_exportListDirNameMissingText;
+	public static String RnActions_exportListCaption;
+	public static String RnActions_exportListMessage;
+	public static String RnActions_exportListAction;
+	public static String RnActions_exportListTooltip;
+	public static String RnActions_exportSaveHelp;
 	public static String RnActions_filterLIstTooltip;
 	public static String RnActions_filterListAction;
 	public static String RnActions_increadeReminderLevelTooltip;
@@ -406,6 +440,8 @@ public class Messages extends NLS {
 	public static String GlobalActions_ChangeMandator;
 	public static String GlobalActions_ChangeMandatorMessage;
 	public static String GlobalActions_Connection;
+	public static String GlobalActions_CloseCase;
+	public static String GlobalActions_CloseCase_SelectCloseDate;
 	public static String GlobalActions_Copy;
 	public static String GlobalActions_CouldntDeleteCaseExplanation;
 	public static String GlobalActions_CouldntDeleteCaseMessage;
@@ -755,6 +791,7 @@ public class Messages extends NLS {
 	
 	public static String Leistungscodes_removeOpenReminders;
 	public static String Leistungscodes_separateObligations;
+	public static String Leistungscodes_defaultLawLabel;
 
 	public static String LogbackConfigDetails;
 	public static String LogbackConfigDefault;
@@ -950,6 +987,8 @@ public class Messages extends NLS {
 	public static String FallDetailBlatt2_unusedFieldsWithDefinition;
 	public static String FallDetailBlatt2_unusedFieldsWithoutDefinition;
 	public static String FallDetailBlatt2_CopyToPatient;
+	public static String FallDetailBlatt2_SelectCostBearerCaption;
+	public static String FallDetailBlatt2_SelectCostBearerBody;
 	public static String FallListeView_Cases;
 	public static String FallListeView_Date;
 	public static String FallListeView_Illness;
@@ -1197,6 +1236,7 @@ public class Messages extends NLS {
 	public static String ReminderView_activatePatientAction;
 	public static String ReminderView_activatePatientTooltip;
 	public static String ReminderView_toggleSelectPatientActionTooltip;
+	public static String ReminderView_defaultPatientRelatedTooltip;
 	public static String ReminderView_deleteAction;
 	public static String ReminderView_deleteToolTip;
 	public static String ReminderView_foreignAction;
@@ -1439,6 +1479,7 @@ public class Messages extends NLS {
 	public static String VerrechnungsDisplay_fixMedication;
 	public static String BriefAuswahlNotAllowedToRunStresstess;
 	public static String ReminderView_txtSearch_message;
+	public static String ReminderPref_defaultPatientRelated;
 	public static String LimitedText_MaxLengthReached;
 	public static String CreatePrescriptionHelper_InfoDispensationArtikelstammTitel;
 	public static String CreatePrescriptionHelper_InfoDispensationArtikelstammUpate;
@@ -1476,6 +1517,7 @@ public class Messages extends NLS {
 	public static String StockManagementPreferencePage_lblMachineConfig_text;
 	public static String SystemPreferencePage_editor_labelText;
 	public static String SystemPreferencePage_editor_labelText_1;
+	public static String SystemPreferencePage_editor_selfContact_label;
 	public static String StockManagementPreferencePage_linkDefaultArticleProvider_text;
 	public static String StockManagementPreferencePage_linkDefaultArticleProvider_toolTipText;
 	public static String StockManagementPreferencePage_lblNewLabel_text;
@@ -1795,6 +1837,9 @@ public class Messages extends NLS {
 	public static String EditLabItem_title;
 	public static String EditLabItem_titleScriptEditor;
 	public static String EditLabItem_tooltipGroup;
+	public static String EditLabItem_OriginLaboratoryLabel;
+	public static String EditLabItem_OriginLaboratorySelectorCaption;
+	public static String EditLabItem_OriginLaboratorySelectorBody;
 	public static String EditLabResultDialog_errorNoResult;
 	public static String EditLabResultDialog_errorRefFemaleNotNumber;
 	public static String EditLabResultDialog_errorRefMaleNotNumber;
@@ -1852,6 +1897,7 @@ public class Messages extends NLS {
 	public static String EigenartikelTyp_PHARMA;
 	public static String EigenartikelTyp_UNKNOWN;
 	public static String EigenartikelTyp_COMPLEMENTARY; 
+	public static String EigenartikelTyp_ADDITIVE;
 	public static String EigendiagnoseSelector_Shortcut_Label;
 	public static String EigendiagnoseSelector_Text_Label;
 	public static String Eigendiagnosen_BadFileFormat;
@@ -1953,6 +1999,7 @@ public class Messages extends NLS {
 	public static String HL7Parser_ErrorReading;
 	public static String HL7Parser_ExceptionWhileProcessingData;
 	public static String HL7Parser_LabAlreadyImported;
+	public static String HL7Parser_LabItem_Note_Name;
 	public static String HL7Parser_LabNotFound;
 	public static String HL7Parser_NoLab;
 	public static String HL7Parser_TheFile;
@@ -2236,6 +2283,8 @@ public class Messages extends NLS {
 	public static String Leistungscodes_billingSystemCaption;
 	public static String Leistungscodes_billingSystemLabel;
 	public static String Leistungscodes_billingSystems;
+	public static String Leistungscodes_maskCostBearer;
+	public static String Leistungscodes_useMultiplierForCustomServices;
 	public static String Leistungscodes_caseConstants;
 	public static String Leistungscodes_changeFieldTypeTo;
 	public static String Leistungscodes_changeTextInTitleBar;
@@ -2530,6 +2579,7 @@ public class Messages extends NLS {
 	public static String TimeTool_yearsAgoFormat;
 	public static String TimeTool_yearsToFormat;
 	public static String LabResultDeleteAction_title;
+	public static String LabResultEvaluator_LabItemNoRefValue;
 	public static String SetPathologic;
 	public static String SetNonPathologic;
 	public static String TreeContentProvider_loadData;
@@ -2611,6 +2661,20 @@ public class Messages extends NLS {
 	public static String Visibility_ON_PATIENT_SELECTION;
 	public static String Visibility_POPUP_ON_LOGIN;
 	public static String Visibility_POPUP_ON_PATIENT_SELECTION;
+	public static String HL7LabImportRulesPreferencePage_lblLabImportRulesHeader_text;
+	public static String LabEvaluationRulesPreferencePage_lblLabImportRulesHeader_text;
+	public static String LabEvaluationRulesPreferencePage_btnUseParameterRefValOnMissingResRefVal_text;
+	public static String LabEvaluationRulesPreferencePage_grpAbsoluteResults_text;
+	public static String LabEvaluationRulesPreferencePage_grpTextResults_text;
+	public static String LabEvaluationRulesPreferencePage_btnCheckStringEqualRefValResValIsNonPathologicAbsolute_text;
+	public static String LabEvaluationRulesPreferencePage_btnResultStartsWithPosIsPathologic_text;
+	public static String LabEvaluationRulesPreferencePage_btnCheckNonStringEqualRefValResValIsPathologicAbsolute_text;
+	public static String LabEvaluationRulesPreferencePage_btnCheckNonStringEqualRefValResValIsPathologicText_text;
+	public static String LabEvaluationRulesPreferencePage_lblWennKeineRegel_text;
+	public static String LabEvaluationRulesPreferencePage_lblResultatEndbestimmt_text;
+	public static String LabEvaluationRulesPreferencePage_lblLabNoPathFlagMeansNonPath_text;
+	public static String MPF_Rule_PathDescriptionText;
+	
 	static { // load message values from bundle file
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}

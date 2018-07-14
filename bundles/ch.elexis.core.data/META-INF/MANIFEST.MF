@@ -16,13 +16,15 @@ Require-Bundle: org.slf4j.api;bundle-version="1.7.2";visibility:=reexport,
  com.eclipsesource.jaxrs.consumer;bundle-version="5.3.1",
  ch.rgw.utility;bundle-version="3.2.0",
  ch.elexis.core;bundle-version="3.2.0";visibility:=reexport,
- ch.elexis.core.l10n;bundle-version="3.5.0"
+ ch.elexis.core.l10n;bundle-version="3.5.0",
+ org.jboss.aerogear.otp-java;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: .,
  ch.elexis.admin,
  ch.elexis.core.data.activator,
  ch.elexis.core.data.beans,
  ch.elexis.core.data.constants,
+ ch.elexis.core.data.dbupdate,
  ch.elexis.core.data.events,
  ch.elexis.core.data.extension,
  ch.elexis.core.data.interfaces,
@@ -47,3 +49,4 @@ Import-Package: ch.elexis.core.findings.migration,
  javax.ws.rs.ext;version="1.1.1",
  org.apache.commons.io;version="2.4.0",
  org.apache.commons.io.filefilter
+Automatic-Module-Name: ch.elexis.core.data

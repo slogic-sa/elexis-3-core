@@ -25,14 +25,20 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.LoggerFactory;
+
 import ch.elexis.core.constants.Preferences;
 import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.data.activator.CoreHub;
 import ch.elexis.core.data.beans.ContactBean;
+import ch.elexis.core.data.events.ElexisEvent;
+import ch.elexis.core.data.lab.LabResultEvaluationResult;
+import ch.elexis.core.data.lab.LabResultEvaluator;
 import ch.elexis.core.exceptions.ElexisException;
 import ch.elexis.core.jdt.Nullable;
 import ch.elexis.core.model.IContact;
 import ch.elexis.core.model.ILabItem;
+import ch.elexis.core.model.ILabOrder;
 import ch.elexis.core.model.ILabResult;
 import ch.elexis.core.model.IPatient;
 import ch.elexis.core.types.Gender;
@@ -101,83 +107,6 @@ public class LabResult extends PersistentObject implements ILabResult {
 	protected LabResult(final String id){
 		super(id);
 	}
-
-	/**
-	 * @since 3.2
-	 */
-	public LabResult(IPatient p, TimeTool date, ILabItem item, String result, String comment,
-		IContact origin){
-		create(null);
-		String[] fields = {
-			PATIENT_ID, DATE, ITEM_ID, RESULT, COMMENT
-		};
-		String[] vals =
-			new String[] {
-				p.getId(),
-				date == null ? new TimeTool().toString(TimeTool.DATE_GER) : date
-					.toString(TimeTool.DATE_GER), item.getId(), result, comment
-			};
-		set(fields, vals);
-		// do we have an initial reference value?
-		
-		int flags = isPathologic(p.getGender(), item, result) ? PATHOLOGIC : 0;
-		set(FLAGS, Integer.toString(flags));
-		
-		// do we have an initial origin (sending facility)
-		if (origin != null) {
-			set(ORIGIN_ID, origin.getId());
-		} else {
-			set(ORIGIN_ID, "");
-		}
-		addToUnseen();
-	}
-
-	/**
-	 * Creates a new LabResult. If the type is numeric, a pathologic check will be applied.
-	 * 
-	 * @param p
-	 * @param date
-	 * @param item
-	 * @param result
-	 * @param comment
-	 * @param refVal
-	 *            valid for gender of {@link Patient} p
-	 * @param origin
-	 *            sending facility
-	 * @since 3.1
-	 */
-	public LabResult(final Patient p, final TimeTool date, final ILabItem item, final String result,
-		final String comment, @Nullable String refVal, @Nullable
-		final Kontakt origin){
-		create(null);
-		String[] fields = {
-			PATIENT_ID, DATE, ITEM_ID, RESULT, COMMENT
-		};
-		String[] vals =
-			new String[] {
-				p.getId(),
-				date == null ? new TimeTool().toString(TimeTool.DATE_GER) : date
-					.toString(TimeTool.DATE_GER), item.getId(), result, comment
-			};
-		set(fields, vals);
-		// do we have an initial reference value?
-		if (refVal != null) {
-			if (Person.MALE.equalsIgnoreCase(p.getGeschlecht())) {
-				setRefMale(refVal);
-			} else {
-				setRefFemale(refVal);
-			}
-		}
-		
-		int flags = isPathologic(p.getGender(), item, result) ? PATHOLOGIC : 0;
-		set(FLAGS, Integer.toString(flags));
-		
-		// do we have an initial origin (sending facility)
-		if (origin != null) {
-			setOrigin(origin);
-		}
-		addToUnseen();
-	}
 	
 	/**
 	 * create a new LabResult. If the type is numeric, we'll check whether it's pathologic
@@ -195,61 +124,189 @@ public class LabResult extends PersistentObject implements ILabResult {
 		this(p, date, item, result, comment, null, origin);
 	}
 	
-	private boolean isPathologic(final Gender g, final ILabItem item, final String result,
-		boolean updateDescription){
-		if (item.getTyp().equals(LabItemTyp.ABSOLUTE)) {
-			if (result.toLowerCase().startsWith("pos")) { //$NON-NLS-1$
-				if (updateDescription) {
-					setPathologicDescription(
-						new PathologicDescription(Description.PATHO_ABSOLUT, "pos"));
-				}
-				return true;
-			}
-			if (result.trim().startsWith("+")) { //$NON-NLS-1$
-				if (updateDescription) {
-					setPathologicDescription(
-						new PathologicDescription(Description.PATHO_ABSOLUT, "+"));
-				}
-				return true;
-			}
-			if(updateDescription) {
-				setPathologicDescription(new PathologicDescription(Description.PATHO_ABSOLUT, result));
-			}
-			return false;
-		} else {
-			String nr;
-			boolean usedItemRef = false;
-			if (g == Gender.MALE) {
-				nr = getRefMale();
-				usedItemRef = isUsingItemRef(REFMALE);
+	/**
+	 * @since 3.2
+	 * @since 3.5 via
+	 *        {@link #LabResult(String, Gender, TimeTool, ILabItem, String, String, String, Kontakt)}
+	 */
+	public LabResult(IPatient p, TimeTool date, ILabItem item, String result, String comment,
+		IContact origin){
+		this(p.getId(), p.getGender(), date, item, result, comment, null,
+			(origin != null) ? origin.getId() : null);
+	}
+	
+	/**
+	 * @since 3.5 via
+	 *        {@link #LabResult(String, Gender, TimeTool, ILabItem, String, String, String, Kontakt)}
+	 */
+	public LabResult(final Patient p, final TimeTool date, final ILabItem item, final String result,
+		final String comment, @Nullable String refVal, @Nullable
+		final Kontakt origin){
+		this(p.getId(), p.getGender(), date, item, result, comment, refVal,
+			(origin != null) ? origin.getId() : null);
+	}
+	
+	public LabResult(final String patientId, final Gender gender, final TimeTool date,
+		final ILabItem item, final String result, final String comment, @Nullable String refVal,
+		@Nullable
+		final String originId){
+		this(patientId, gender, date, item, result, comment, refVal, originId, true);
+	}
+	
+	/**
+	 * 
+	 * @param patientId
+	 * @param gender
+	 * @param date
+	 * @param item
+	 * @param result
+	 * @param comment
+	 * @param refVal
+	 * @param origin
+	 * @param sendEvent
+	 *            send create event
+	 * @since 3.5 refactored, send {@link ElexisEvent#EVENT_CREATE} after full initialization of the
+	 *        object
+	 */
+	public LabResult(final String patientId, final Gender gender, final TimeTool date,
+		final ILabItem item, final String result, final String comment, @Nullable String refVal,
+		@Nullable
+		final String originId, boolean sendEvent){
+			
+		create(null, null, null, false);
+		String _date = (date == null) ? new TimeTool().toString(TimeTool.DATE_COMPACT)
+				: date.toString(TimeTool.DATE_COMPACT);
+		String[] fields = {
+			PATIENT_ID, DATE, ITEM_ID, RESULT, COMMENT, ORIGIN_ID
+		};
+		String[] vals = new String[] {
+			patientId, _date, item.getId(), result, comment, originId
+		};
+		set(fields, vals);
+		
+		// do we have an initial reference value?
+		if (refVal != null) {
+			if (Gender.MALE == gender) {
+				setRefMale(refVal);
 			} else {
-				nr = getRefFemale();
-				usedItemRef = isUsingItemRef(REFFEMALE);
-			}
-			List<String> refStrings = parseRefString(nr);
-			// only test first string as range is defined in one string
-			if (result != null && !refStrings.isEmpty() && !refStrings.get(0).isEmpty()) {
-				if (updateDescription) {
-					if (usedItemRef) {
-						setPathologicDescription(new PathologicDescription(
-							Description.PATHO_REF_ITEM, refStrings.get(0)));
-					} else {
-						setPathologicDescription(
-							new PathologicDescription(Description.PATHO_REF, refStrings.get(0)));
-					}
-				}
-				Boolean testResult = testRef(refStrings.get(0), result);
-				if (testResult != null) {
-					return testResult;
-				} else {
-					if (updateDescription) {
-						setPathologicDescription(
-							new PathologicDescription(Description.PATHO_NOREF, refStrings.get(0)));
-					}
-					return false;
-				}
+				setRefFemale(refVal);
 			}
 		}
+		
+		int flags = isPathologic(gender, item, result) ? PATHOLOGIC : 0;
+		set(FLAGS, Integer.toString(flags));
+		
+		addToUnseen();
+		
+		if (sendEvent) {
+			sendElexisEvent(ElexisEvent.EVENT_CREATE);
+		}
+		
+	}
+	
+	/**
+	 * Create a LabResult and assert that an according LabOrder exists and is linked with this
+	 * result. This ensures, that the combination of both is properly initialized before the
+	 * LabResult create event is sent.
+	 * 
+	 * @param labor
+	 * @param comment
+	 * @param result
+	 * @param item
+	 * @param date
+	 * @param pat
+	 * @param refValFemale
+	 * @param refValMale
+	 * @param labOrder
+	 * @return
+	 * @since 3.5
+	 */
+	public static LabResult createLabResultAndAssertLabOrder(Patient pat, TimeTool date,
+		LabItem item, String result, String comment, @Nullable Labor origin, String refVal,
+		ILabOrder labOrder, String orderId, String mandantId, TimeTool time, String groupName){
+		
+		LabResult labResult = new LabResult(pat.getId(), pat.getGender(), date, item, result,
+			comment, refVal, (origin != null) ? origin.getId() : null, false);
+		
+		if (labOrder == null) {
+			if (time == null) {
+				LoggerFactory.getLogger(LabResult.class).warn(
+					"Could not resolve observation time and time for ILabResult [{}], defaulting to now.",
+					labResult.getId());
+				time = new TimeTool();
+			}
+			new LabOrder(CoreHub.actUser.getId(), mandantId, pat.getId(), item, labResult.getId(),
+				orderId, groupName, time);
+		} else {
+			((LabOrder) labOrder).setLabResultIdAsString(labResult.getId());
+		}
+		
+		labResult.sendElexisEvent(ElexisEvent.EVENT_CREATE);
+		
+		return labResult;
+	}
+	
+	/**
+	 * Return the LabOrder linked to this LabResult
+	 * 
+	 * @since 3.5
+	 */
+	public @Nullable LabOrder getLabOrder(){
+		Query<LabOrder> qre = new Query<LabOrder>(LabOrder.class, LabOrder.FLD_RESULT, getId());
+		List<LabOrder> execute = qre.execute();
+		if (execute.size() > 0) {
+			if (execute.size() > 1) {
+				log.warn("Multiple LabOrders for LabResult [{}] found, please check", getId());
+			}
+			return execute.get(0);
+		}
+		return null;
+	}
+	
+	private boolean isPathologic(final Gender g, final ILabItem item, final String result,
+		boolean updateDescription){
+		
+		LabResultEvaluationResult er = new LabResultEvaluator().evaluate(this);
+		if (er.isFinallyDetermined()) {
+			if (updateDescription && er.getPathologicDescription() != null) {
+				setPathologicDescription(er.getPathologicDescription());
+			}
+			return er.isPathologic();
+		}
+		
+		String nr;
+		boolean usedItemRef = false;
+		if (g == Gender.MALE) {
+			nr = getRefMale();
+			usedItemRef = isUsingItemRef(REFMALE);
+		} else {
+			nr = getRefFemale();
+			usedItemRef = isUsingItemRef(REFFEMALE);
+		}
+		List<String> refStrings = parseRefString(nr);
+		// only test first string as range is defined in one string
+		if (result != null && !refStrings.isEmpty() && !refStrings.get(0).isEmpty()) {
+			if (updateDescription) {
+				if (usedItemRef) {
+					setPathologicDescription(
+						new PathologicDescription(Description.PATHO_REF_ITEM, refStrings.get(0)));
+				} else {
+					setPathologicDescription(
+						new PathologicDescription(Description.PATHO_REF, refStrings.get(0)));
+				}
+			}
+			Boolean testResult = testRef(refStrings.get(0), result);
+			if (testResult != null) {
+				return testResult;
+			} else {
+				if (updateDescription) {
+					setPathologicDescription(
+						new PathologicDescription(Description.PATHO_NOREF, refStrings.get(0)));
+				}
+				return false;
+			}
+		}
+		
 		if (updateDescription) {
 			setPathologicDescription(new PathologicDescription(Description.PATHO_NOREF));
 		}
@@ -381,6 +438,7 @@ public class LabResult extends PersistentObject implements ILabResult {
 	}
 	
 	public String getResult(){
+		String result = checkNull(get(RESULT));
 		if (getItem().getTyp() == LabItemTyp.FORMULA) {
 			String value = null;
 			// get the LabOrder for this LabResult
@@ -397,9 +455,12 @@ public class LabResult extends PersistentObject implements ILabResult {
 				}
 				value = evaluateWithDateContext(time);
 			}
-			setResult(value);
+			if (!result.equals(value)) {
+				setResult(value);
+				result = checkNull(get(RESULT));
+			}
 		}
-		return checkNull(get(RESULT));
+		return result;
 	}
 	
 	private String evaluteWithOrderContext(LabOrder order){
@@ -607,8 +668,7 @@ public class LabResult extends PersistentObject implements ILabResult {
 		} else {
 			String ref = checkNull(get(refField));
 			if (ref.isEmpty()) {
-				log.info("using local LabRefVal [" + localRef
-					+ "] as none could be resolved from labResult");
+				log.info("using local LabRefVal [{}] as none could be resolved from labResult", localRef);
 				return localRef;
 			}
 			return ref;
@@ -786,7 +846,7 @@ public class LabResult extends PersistentObject implements ILabResult {
 		}
 		return new ContactBean(origin);
 	}
-
+	
 	@Override
 	public void setOriginContact(IContact value){
 		Kontakt load = Kontakt.load(value.getId());

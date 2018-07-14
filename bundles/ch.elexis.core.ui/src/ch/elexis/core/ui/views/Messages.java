@@ -182,6 +182,8 @@ public class Messages {
 	public static String FallDetailBlatt2_unusedFieldsWithDefinition = ch.elexis.core.l10n.Messages.FallDetailBlatt2_unusedFieldsWithDefinition;
 	public static String FallDetailBlatt2_unusedFieldsWithoutDefinition = ch.elexis.core.l10n.Messages.FallDetailBlatt2_unusedFieldsWithoutDefinition;
 	public static String FallDetailBlatt2_CopyToPatient = ch.elexis.core.l10n.Messages.FallDetailBlatt2_CopyToPatient;
+	public static String FallDetailBlatt2_SelectCostBearerCaption = ch.elexis.core.l10n.Messages.FallDetailBlatt2_SelectCostBearerCaption;
+	public static String FallDetailBlatt2_SelectCostBearerBody = ch.elexis.core.l10n.Messages.FallDetailBlatt2_SelectCostBearerBody;
 	public static String FallListeView_Cases = ch.elexis.core.l10n.Messages.FallListeView_Cases;
 	public static String FallListeView_Date = ch.elexis.core.l10n.Messages.FallListeView_Date;
 	public static String FallListeView_Illness = ch.elexis.core.l10n.Messages.FallListeView_Illness;
@@ -442,6 +444,7 @@ public class Messages {
 	public static String ReminderView_activatePatientAction = ch.elexis.core.l10n.Messages.ReminderView_activatePatientAction;
 	public static String ReminderView_activatePatientTooltip = ch.elexis.core.l10n.Messages.ReminderView_activatePatientTooltip;
 	public static String ReminderView_toggleSelectPatientActionTooltip = ch.elexis.core.l10n.Messages.ReminderView_toggleSelectPatientActionTooltip;
+	public static String ReminderView_defaultPatientRelatedTooltip = ch.elexis.core.l10n.Messages.ReminderView_defaultPatientRelatedTooltip;
 	public static String ReminderView_deleteAction = ch.elexis.core.l10n.Messages.ReminderView_deleteAction;
 	public static String ReminderView_deleteToolTip = ch.elexis.core.l10n.Messages.ReminderView_deleteToolTip;
 	public static String ReminderView_foreignAction = ch.elexis.core.l10n.Messages.ReminderView_foreignAction;

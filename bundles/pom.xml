@@ -15,6 +15,7 @@
   </parent>
 
   <modules>
+    <module>com.eclipsesource.jaxrs.jersey-min</module>
     <module>ch.elexis.core.l10n</module>
     <module>ch.elexis.core.application</module>
     <module>ch.elexis.core.console.application</module>
@@ -40,6 +41,7 @@
     <module>ch.elexis.core.scheduler</module>
     <module>ch.elexis.core.scripting.beanshell</module>
     <module>ch.elexis.core.ui.contacts</module>
+    <module>ch.elexis.core.ui.dbcheck</module>
     <module>ch.elexis.core.ui.documents</module>
     <module>ch.elexis.core.ui.eigenartikel</module>
     <module>ch.elexis.core.ui.eigendiagnosen</module>

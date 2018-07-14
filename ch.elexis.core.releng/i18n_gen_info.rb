@@ -159,7 +159,7 @@ class L10N_Cache
           raise "Unexpected header #{cells.join(',')}" unless cells.eql?(CSV_HEADER_START + CSV_KEYS)
           next
         end
-        CSV_KEYS.each_with_index { |lang, index| self.set_translation(cells[0], lang, cells[index+1]) }
+        CSV_KEYS.each_with_index { |lang, idx| self.set_translation(cells[0], lang, cells[idx+1]) }
       end
     end
   end
@@ -222,7 +222,7 @@ class I18nInfo
   def get_git_path(filename)
     `git ls-tree --full-name --name-only HEAD #{filename}`.chomp
   end
-  def find_translation  (key, language, project, filename, line_nr)
+  def find_translation(key, language, project, filename, line_nr)
     found = @@db_texts.where(:key => key.to_s, :language => language, repository: @repository, project: project, filename:  get_git_path(filename), line_nr: line_nr).all.first
     found ? found[:translation] : nil
   end
@@ -239,20 +239,20 @@ class I18nInfo
       return false if /^#/.match(line)
       return false if line.length <= 1
       line = line.encode("utf-8", replace: nil)
-    rescue => e
+    rescue
       line
     end
     begin
-    m = /([^=]*)\s*=\s*(.*)/.match(line.chomp)
-    return unless m
-    rescue => error
-      # Happens with french translat of DataImporter
-      line = '%Da' + line[1..-1]
-      begin
       m = /([^=]*)\s*=\s*(.*)/.match(line.chomp)
+      return unless m
       rescue => error
-      	binding.pry
-  	   end
+        # Happens with french translat of DataImporter
+        line = '%Da' + line[1..-1]
+        begin
+          m = /([^=]*)\s*=\s*(.*)/.match(line.chomp)
+        rescue => error
+          binding.pry
+        end
     end
     # key has two special thing:
     # * fix some odd occurrences like "BBS_View20\t\t\t "
@@ -287,8 +287,16 @@ class I18nInfo
   def parse_plugin_xml(project_name, filename)
     return unless File.exist?(filename)
     keys = {}
+    # (?:|label=")|description="|tooltip="|name="|)%([\.\w]+)
     IO.readlines(filename).each do |line|
-      if (m = /name="%([\.\w]+)/i.match(line.chomp))
+      if (m = /%([\.\w]+)/i.match(line.chomp))
+        key = [project_name, m[1] ].join('_')
+        keys[key] = ''
+      end
+    end;
+    mf = filename.sub('plugin.xml', 'META-INF/MANIFEST.MF')
+    IO.readlines(mf).each do |line|
+      if (m = /:\s+%([\.\w-]+)/i.match(line.chomp))
         key = [project_name, m[1] ].join('_')
         keys[key] = ''
       end
@@ -321,22 +329,22 @@ class I18nInfo
       if analyse_one_message_line(project_name, language2, filename, line_nr, line) && language2.eql?(L10N_Cache::JavaLanguage)
       end
     end
-    puts "#{project_name} added #{filename} info #{info}" if $VERBOSE
+    puts "#{project_name} added #{filename}" if $VERBOSE
   end
 
   def get_project_name(project_dir)
     while true
       project_file = File.join(project_dir, ".project")
       break if File.exist?(project_file)
+      return nil if  project_dir.eql?(Dir.pwd)
       project_dir = File.dirname(project_dir)
     end
     project_xml = Document.new(File.new(project_file))
-    project_name  = project_xml.elements['projectDescription'].elements['name'].text
+    project_xml.elements['projectDescription'].elements['name'].text
   end
 
   def parse_plugin_and_messages
     L10N_Cache.load_cache(File.join(Dir.pwd, L10N_Cache::TRANSLATIONS_CSV_NAME))
-    start_dir = Dir.pwd
     @@directories.each do |directory|
       @main_dir = File.expand_path(directory)
       Dir.chdir(@main_dir)
@@ -389,42 +397,42 @@ class I18nInfo
   end
 
   def add_csv_to_db_texts(csv_file)
-    puts "Adding missing entries for  #{csv_file}"
+    puts "Adding missing entries for #{csv_file}"
     L10N_Cache.load_cache(csv_file)
     msgs_to_add = read_translation_csv(csv_file)
     inserts = {}
+    idx = 0
     msgs_to_add.each do |tag_name, value|
+      idx += 1
+      puts "#{Time.now}: Analysing message #{idx} of #{msgs_to_add.size}" if idx % 500 == 0
       next unless tag_name
       tag_name = tag_name.encode('utf-8')
+      # Ensure that we have a german translation (which is our default language)
       german_translation = L10N_Cache.get_translation(tag_name, 'de')
+      if german_translation.size == 0
+        java_translation = L10N_Cache.get_translation(tag_name, L10N_Cache::JavaLanguage)
+        german_translation = add_google_translation('en', java_translation, 'de')
+        L10N_Cache.set_translation(tag_name, 'de', german_translation)
+      end
       L10N_Cache::CSV_KEYS.each do |lang|
-        next if lang.eql?(L10N_Cache::JavaLanguage)
+        next if lang.eql?(L10N_Cache::JavaLanguage) || lang.eql?('de')
         current_translation = L10N_Cache.get_translation(tag_name, lang)
-        # puts "current_translation for #{tag_name} #{lang} is #{current_translation}"
-        unless current_translation && current_translation.size == 0
-          if german_translation.size == 0
-            next if lang.eql?('en')
-            java_translation = L10N_Cache.get_translation(tag_name, L10N_Cache::JavaLanguage)
-            translated = add_google_translation('en', java_translation, lang)
-          else
-            next if lang.eql?('de')
-            translated = add_google_translation('de', german_translation, lang)
-          end
+        if current_translation.size == 0
+          translated = add_google_translation('de', german_translation, lang)
           puts "Adding #{translated} missing translation for #{lang} #{tag_name}" if $VERBOSE
           L10N_Cache.set_translation(tag_name, lang, translated)
           inserts[[tag_name, lang]] =   translated
-          next
+          puts "#{Time.now}: Added #{inserts.size} new translations" if inserts.size % 100 == 0
         end
       end
     end
     puts "Inserted #{inserts.size} missing entries of #{msgs_to_add.size}"
     msgs_to_add
   end
- def add_missing(csv_file)
+  def add_missing(csv_file)
     raise "You must specify an existing CSV file" unless File.file?(csv_file)
     L10N_Cache.load_cache(csv_file)
-    main_language = 'de'
-    messages = add_csv_to_db_texts(csv_file)
+    add_csv_to_db_texts(csv_file)
     L10N_Cache::save_cache(csv_file)
   end
 
@@ -457,23 +465,22 @@ class I18nInfo
       key = cells[0..L10N_Cache::CSV_HEADER_START.size-1]
       key = key.first if  L10N_Cache::CSV_HEADER_SIZE == 1
       all_msgs[key] ||= {}
-      @languages.each_with_index do |lang, index|
-        all_msgs[key][lang] = "#{cells[index + L10N_Cache::CSV_HEADER_SIZE]}"
+      @languages.each_with_index do |lang, idx|
+        all_msgs[key][lang] = "#{cells[idx + L10N_Cache::CSV_HEADER_SIZE]}"
       end
     end
     all_msgs
   end
 
   def generate_plugin_properties(project_name, filename)
-    puts "Generating plugin properties for #{File.expand_path(filename)}" if $VERBOSE
-    keys = []
-    File.open(filename, RBE_FILE_OPTIONS_FOR_READ).readlines.each do |line|
-      key, value = get_key_value(line.chomp, replace_dots_by_underscore: false)
-      keys << [project_name, key].join('_')
+    if project_name.eql?('ch.elexis.core.findings.templates.edit')
+      puts "Skipped plugin properties for #{project_name}"
+      return
     end
+    puts "Generating plugin properties for #{File.expand_path(filename)}" if $VERBOSE
     plugin_key_hash = parse_plugin_xml(project_name, File.join(File.dirname(filename), 'plugin.xml')) || {}
-    keys += plugin_key_hash.keys
-    LanguageViews.keys.each do |lang|
+    keys = plugin_key_hash.keys
+    L10N_Cache::CSV_KEYS.each do |lang|
       lang_file = filename.sub('.properties', (lang.eql?('Java') ? '' : '_' + lang) + '.properties')
       File.open(lang_file, RBE_FILE_OPTIONS_FOR_WRITE) do |file|
         keys.sort.uniq.each do |tag_name|
@@ -481,20 +488,19 @@ class I18nInfo
           translations =   @@all_msgs[tag_name]        
           unless translations
             puts "#{project_name}: Missing translation in #{File.basename(lang_file)} for #{tag_name}"
-            emit_RBE_compatible_line(file, tag_name, '')
+            emit_RBE_compatible_line(file, tag_name, '', true)
             next
           end
-          value =translations[ lang ]
           lang_value = translations[lang]
           lang_value = translations[L10N_Cache::JavaLanguage] if !lang_value || lang_value.empty?
           tag2write = tag_name.sub(project_name+'_','')
           next if tag2write.eql?('false')
-          next unless plugin_key_hash.keys.find_all{|x| /#{tag_name}$/.match(x)}.size > 0
+          next unless keys.find_all{|x| /#{tag_name}$/.match(x)}.size > 0
           if !lang_value || lang_value.empty?
             puts "no #{lang} value found for #{tag2write}"
             next
           end
-          emit_RBE_compatible_line(file, tag2write, lang_value)
+          emit_RBE_compatible_line(file, tag2write, lang_value, true)
         end
       end
     end
@@ -502,8 +508,8 @@ class I18nInfo
 
   def to_utf(string)
     begin
-      m = /String\s+(\w+)\s*;/.match(string)
-    rescue => error
+      /String\s+(\w+)\s*;/.match(string)
+    rescue
       string = string.encode('UTF-8', 'ISO-8859-1')
     end
     string
@@ -542,12 +548,18 @@ public class Messages extends NLS {
       if /base.10n/i.match(project_name)
         puts "to_messages_properties skips project #{project_name} because its name matches 10n"
       end
-      keys = get_keys_from_messages_java(msg_java)
+      keys = get_keys_from_messages_java(msg_java).sort
+      next unless keys.size > 0
       # Niklaus wants to undo changes in elexis-3-base
       patch_messages_java(msg_java) unless msg_java.index('elexis-3-core')
       L10N_Cache::CSV_KEYS.each do |lang|
         lang_file = msg_java.sub('Messages', 'messages').sub('.java', (lang.eql?('Java') ? '' : '_' + lang) + '.properties')
-        puts "to_messages_properties: Generating #{lang} #{lang_file} using #{msg_java}" if $VERBOSE
+        if msg_java.index('elexis-3-core') && !project_name.eql?('i10n') && !File.exist?(lang_file)
+          puts "to_messages_properties: Skip generating #{lang} #{lang_file.sub(Dir.pwd + '/', '')}"
+          break
+        else
+          puts "to_messages_properties: Generating #{lang} #{lang_file} using #{msg_java}" if $VERBOSE
+        end
         File.open(lang_file, RBE_FILE_OPTIONS_FOR_WRITE) do |file|
           keys.each do |tag_name|
             next if /_false$/.match(tag_name)
@@ -559,7 +571,6 @@ public class Messages extends NLS {
               emit_RBE_compatible_line(file, tag_name, '')
               next
             end
-            value =translations[ lang ]
             lang_value = translations[lang]
             lang_value = translations[L10N_Cache::JavaLanguage] if !lang_value || lang_value.empty?
             tag2write = tag_name.sub(project_name+'_','')
@@ -577,6 +588,7 @@ public class Messages extends NLS {
   
   def get_keys_from_messages_java(msg_java)
     project_name =  get_project_name(main_dir)
+    return [] unless project_name
     lines = File.readlines(msg_java).collect{|line| to_utf(line) }
     keys = lines.collect{|line| m = L10N_Cache::KEY_REGEX_IN_MESSAGES.match(line); m[1] if m }.compact
     puts "#{project_name}: where #{msg_java} has #{keys.size} keys" if $VERBOSE
@@ -590,9 +602,20 @@ public class Messages extends NLS {
   end
 
   # Emit a line compatible with the Essiembre Ressource Bunde Editor of Eclipse Neon
-  def emit_RBE_compatible_line(file, tag_name, lang_value)
+  def emit_RBE_compatible_line(file, tag_name, lang_value, is_plugin = false)
+    @last_category ||= '-'
     begin
-      file.puts "\n#{tag_name} = " + lang_value.dump.gsub(/^"|"$/,'').gsub('\\\\','\\').gsub('\\"', '"').gsub('\t', '\u0009')
+      line = "#{tag_name} = " + lang_value.dump.gsub(/^"|"$/,'').gsub('\\\\','\\').gsub('\\"', '"').gsub('\t', '\u0009')
+      if is_plugin
+        category = tag_name.split('.')[0..-2].join('.')
+        unless category.eql?(@last_category)
+          line = "\n" + line
+          @last_category = category
+        end
+      else
+        line = "\n" + line
+      end
+      file.puts line
     rescue => error
       puts "#{error}: Could not write #{tag_name} #{lang_value}"
       binding.pry
@@ -603,7 +626,6 @@ public class Messages extends NLS {
   # TODO: Generate properties files for all languages by default, but do correct stuff in l10n.{lang}
   def to_plugin_properties
     Dir.chdir(main_dir)
-    index = 0
     L10N_Cache.load_cache(File.join(Dir.pwd, L10N_Cache::TRANSLATIONS_CSV_NAME))
     @@all_msgs  = read_translation_csv(File.join(start_dir, L10N_Cache::TRANSLATIONS_CSV_NAME))
     all_keys = @@all_msgs.keys.collect{|x| x }.uniq
@@ -630,7 +652,7 @@ public class Messages extends NLS {
         m =  /_(..)\.properties/.match(filename)
         lang = m ?  m[1] : 'en'
         puts "to_plugin_properties: Generating #{lang} for #{filename}" if $VERBOSE
-        saved_content = File.open(filename, RBE_FILE_OPTIONS_FOR_READ).readlines
+        File.open(filename, RBE_FILE_OPTIONS_FOR_READ).readlines
         msg_java =filename.sub(/\_(de|fr|it|en)/, '').sub('messages.properties', 'Messages.java')
         next if msg_java.index('/bin/')
         unless File.exist?(msg_java)
@@ -652,7 +674,6 @@ public class Messages extends NLS {
         File.open(filename, RBE_FILE_OPTIONS_FOR_WRITE) do |file|
           keys.sort.uniq.each do |full_key|
             next unless full_key[1]
-            project_id = full_key[0]
             tag_name, dummy =  get_key_value("#{full_key[1]}= 'dummy")
             tag_name = "#{project_name}_#{tag_name}" unless /^messages/i.match(File.basename(filename))
 
@@ -672,8 +693,8 @@ public class Messages extends NLS {
             lang_value = value[lang]
             lang_value = value[L10N_Cache::JavaLanguage] if !lang_value || lang_value.empty?
             if tag_name && (!lang_value || lang_value.empty?)
-            lang_value ||= @@all_msgs[l10n_key, tag_name]
-          end
+              lang_value ||= @@all_msgs[l10n_key, tag_name]
+            end
             if !lang_value || lang_value.empty?
               puts "no #{lang} value found for #{full_key}"
               next
@@ -696,7 +717,7 @@ Useage: #{File.basename(__FILE__)} [-options] [directory1 directory]
   help manipulating files needed for translations
   using Cachefile        #{GoogleTranslation::CacheFileCSV} (UTF-8)
 EOS
-  opt :to_csv   ,         "Create #{L10N_Cache::TRANSLATIONS_CSV_NAME}.csv for all languages with entries for all [manifests|plugin]*.properties ", :default => false, :short => '-c'
+  opt :to_csv   ,         "Create #{L10N_Cache::TRANSLATIONS_CSV_NAME} for all languages with entries for all [manifests|plugin]*.properties ", :default => false, :short => '-c'
   opt :add_missing,       "Add missing translations for a given csv file via Googe Translator using $HOME/google_translation_cache.csv", :default => nil, :short => '-a', :type => String
   opt :to_plugin_properties,     "Create plugin*.properties   for all languages from #{L10N_Cache::TRANSLATIONS_CSV_NAME}", :default => false, :short => '-p'
   opt :to_messages_properties,   "Create messages*.properties for all languages from #{L10N_Cache::TRANSLATIONS_CSV_NAME}\n\n ", :default => false, :short => '-m'

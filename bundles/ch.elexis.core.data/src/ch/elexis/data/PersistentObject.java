@@ -470,12 +470,12 @@ public abstract class PersistentObject implements IPersistentObject {
 			
 			@Override
 			public void settingDeleted(String key){
-				Trace.addTraceEntry("W globalCfg key ["+key+"] => removed");
+				Trace.addTraceEntry("W globalCfg key [" + key + "] => removed");
 			}
 			
 			@Override
 			public void settingWritten(String key, String value){
-				Trace.addTraceEntry("W globalCfg key ["+key+"] => value ["+value+"]");
+				Trace.addTraceEntry("W globalCfg key [" + key + "] => value [" + value + "]");
 			}
 		});
 		
@@ -594,9 +594,8 @@ public abstract class PersistentObject implements IPersistentObject {
 			while (true) {
 				long timestamp = System.currentTimeMillis();
 				// Gibt es das angeforderte Lock schon?
-				String oldlock = stm
-					.queryString("SELECT wert FROM CONFIG WHERE param="
-						+ getConnection().wrapFlavored(lockname));
+				String oldlock = stm.queryString("SELECT wert FROM CONFIG WHERE param="
+					+ getConnection().wrapFlavored(lockname));
 				if (!StringTool.isNothing(oldlock)) {
 					// Ja, wie alt ist es?
 					String[] def = oldlock.split("#");
@@ -622,9 +621,8 @@ public abstract class PersistentObject implements IPersistentObject {
 				stm.exec(sb.toString());
 				// Prüfen, ob wir es wirklich haben, oder ob doch jemand anders
 				// schneller war.
-				String check = stm
-					.queryString("SELECT wert FROM CONFIG WHERE param="
-						+ getConnection().wrapFlavored(lockname));
+				String check = stm.queryString("SELECT wert FROM CONFIG WHERE param="
+					+ getConnection().wrapFlavored(lockname));
 				if (check.equals(lockstring)) {
 					break;
 				}
@@ -646,16 +644,15 @@ public abstract class PersistentObject implements IPersistentObject {
 	 */
 	public static synchronized boolean unlock(final String name, final String id){
 		String lockname = "lock" + name;
-		String lock = getConnection()
-			.queryString("SELECT wert from CONFIG WHERE param="
-				+ getConnection().wrapFlavored(lockname));
+		String lock = getConnection().queryString(
+			"SELECT wert from CONFIG WHERE param=" + getConnection().wrapFlavored(lockname));
 		if (StringTool.isNothing(lock)) {
 			return false;
 		}
 		String[] res = lock.split("#");
 		if (res[0].equals(id)) {
-			getConnection().exec("DELETE FROM CONFIG WHERE param="
-				+ getConnection().wrapFlavored(lockname));
+			getConnection()
+				.exec("DELETE FROM CONFIG WHERE param=" + getConnection().wrapFlavored(lockname));
 			return true;
 		}
 		return false;
@@ -859,10 +856,11 @@ public abstract class PersistentObject implements IPersistentObject {
 	 * 
 	 * @return a List that might be empty but is never null
 	 */
+	@SuppressWarnings("unchecked")
 	public List<IXid> getXids(){
-		Query<IXid> qbe = new Query<IXid>(Xid.class);
+		Query<Xid> qbe = new Query<Xid>(Xid.class);
 		qbe.add(Xid.FLD_OBJECT, Query.EQUALS, getId());
-		return qbe.execute();
+		return (List<IXid>)(List<?>) qbe.execute();
 	}
 	
 	/**
@@ -1798,8 +1796,9 @@ public abstract class PersistentObject implements IPersistentObject {
 					
 					head.append("INSERT INTO ").append(m[3]).append("(ID,").append(m[2]).append(",")
 						.append(m[1]);
-					tail.append(") VALUES (").append(
-						getDBConnection().getJdbcLink().wrapFlavored(StringTool.unique("aij")))
+					tail.append(") VALUES (")
+						.append(
+							getDBConnection().getJdbcLink().wrapFlavored(StringTool.unique("aij")))
 						.append(",").append(getWrappedId()).append(",")
 						.append(getDBConnection().getJdbcLink().wrapFlavored(objectId));
 					if (extra != null) {
@@ -2018,6 +2017,7 @@ public abstract class PersistentObject implements IPersistentObject {
 	
 	/**
 	 * Send an {@link ElexisEvent} concerning this object
+	 * 
 	 * @param eventType
 	 */
 	protected void sendElexisEvent(int eventType){
@@ -2515,7 +2515,7 @@ public abstract class PersistentObject implements IPersistentObject {
 	 *            the field to get a key for
 	 * @return a unique key
 	 */
-	private String getKey(final String field){
+	public String getKey(final String field){
 		return getTableName() + "." + getId() + "#" + field;
 	}
 	
@@ -3224,4 +3224,14 @@ public abstract class PersistentObject implements IPersistentObject {
 			defaultConnection.releaseStatement(stm);
 		}
 	}
+
+	/**
+	 * Clear all attributes that have been cached for this entity. Must be re-implemented by
+	 * a subclass to support. See e.g. Reminder
+	 */
+	public void clearCachedAttributes(){
+		throw new UnsupportedOperationException(
+			"Not implemented for class " + getClass().getName());
+	}
+
 }

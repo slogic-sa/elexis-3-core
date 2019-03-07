@@ -75,6 +75,7 @@ public class Query<T> {
 		"ID"
 	};
 	private final String[] fetchVals;
+	private final String[] prefetchedValues;
 	
 	/**
 	 * @param cl
@@ -163,21 +164,26 @@ public class Query<T> {
 				// consider the resp. datatypes stored
 				List<String> mappedPrefetchValues =
 					new ArrayList<String>(Arrays.asList(ID_FETCH_VAL));
+				prefetchedValues = new String[prefetch.length + 1];
+				prefetchedValues[0] = "ID";
 				for (int i = 0; i < prefetch.length; i++) {
 					String map = PersistentObject.map(tableName, prefetch[i]);
 					if (!map.contains(":")) {
 						mappedPrefetchValues.add(map);
+						prefetchedValues[i + 1] = prefetch[i];
 					} else if (map.startsWith("S:")) {
 						mappedPrefetchValues.add(map.substring(4));
+						prefetchedValues[i + 1] = map + ":::" + prefetch[i];
 					} else {
 						throw new UnsupportedOperationException(
 							"prefetch value not supported: " + prefetch[i] + " maps to " + map);
 					}
-				}
 				
+				}				
 				fetchVals = mappedPrefetchValues.toArray(new String[] {});
 			} else {
 				fetchVals = ID_FETCH_VAL;
+				prefetchedValues = ID_FETCH_VAL;
 			}
 			clear(false);
 			
@@ -228,6 +234,7 @@ public class Query<T> {
 			sql.append(string);
 			ordering = null;
 			fetchVals = ArrayUtils.EMPTY_STRING_ARRAY;
+			prefetchedValues = ArrayUtils.EMPTY_STRING_ARRAY;
 			clearEntityCache = false;
 		} catch (Exception ex) {
 			ElexisStatus status =
@@ -689,10 +696,15 @@ public class Query<T> {
 					po.clearCachedAttributes();
 				}
 				
-				if (fetchVals.length > 1) {
+				if (fetchVals.length > 1 && prefetchedValues.length > 1) {
 					for (int i = 1; i < fetchVals.length; i++) {
 						Object prefetchVal = res.getObject(i + 1);
-						po.putInCache(fetchVals[i], prefetchVal);
+						String field = prefetchedValues[i];
+						if (prefetchedValues[i].startsWith("S:") && prefetchedValues[i].contains(":::")) {
+							field = prefetchedValues[i].split(":::")[1];
+							prefetchVal = po.decode(field, res);
+						}
+						po.putInCache(field, prefetchVal);
 					}
 				}
 				

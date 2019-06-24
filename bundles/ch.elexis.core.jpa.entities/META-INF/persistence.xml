@@ -117,6 +117,8 @@
 			<property name="eclipselink.logging.level.sql" value="FINE" />
 			<property name="eclipselink.logging.parameters" value="true" />
 			<property name="eclipselink.logging.thread" value="true" />
+			<property name="javax.persistence.validation.mode" value="AUTO" />
+			<property name="eclipselink.exception-handler" value="ch.elexis.core.jpa.entities.listener.GlobalExceptionHandler"/>
 		</properties>
 	</persistence-unit>
 </persistence>

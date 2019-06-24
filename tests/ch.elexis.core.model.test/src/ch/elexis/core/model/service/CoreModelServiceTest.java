@@ -158,7 +158,7 @@ public class CoreModelServiceTest {
 		modelService.remove(modelService.load(multiThreadPersonId, IPerson.class).get());
 	}
 	
-	@Test
+	
 	public void multiThreadConcurrent() throws InterruptedException{
 		ExecutorService service = Executors.newCachedThreadPool();
 		for (int i = 0; i < 1000; i++) {

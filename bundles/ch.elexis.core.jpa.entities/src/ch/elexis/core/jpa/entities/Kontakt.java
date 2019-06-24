@@ -32,6 +32,7 @@ import javax.persistence.MapKey;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.annotations.Cache;
@@ -186,6 +187,7 @@ public class Kontakt extends AbstractEntityWithId
 	protected String code;
 
 	@Column(length = 6, name = "plz")
+	@Size(max=6)
 	protected String zip;
 
 	@Basic(fetch = FetchType.LAZY)

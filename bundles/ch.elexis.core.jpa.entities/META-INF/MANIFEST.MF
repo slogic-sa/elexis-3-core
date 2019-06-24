@@ -14,7 +14,9 @@ Require-Bundle: javax.persistence;bundle-version="2.2.0";visibility:=reexport,
  org.eclipse.persistence.core;bundle-version="2.7.2";visibility:=reexport,
  org.eclipse.persistence.jpa;bundle-version="2.7.2",
  org.eclipse.persistence.jpa.jpql;bundle-version="2.7.2",
- org.eclipse.gemini.jpa;bundle-version="1.2.0"
+ org.eclipse.gemini.jpa;bundle-version="1.2.0",
+ org.apache.bval.org.apache.bval.bundle;bundle-version="1.1.2";visibility:=reexport,
+ javax.validation.api;bundle-version="1.1.0"
 Import-Package: ch.elexis.core.constants,
  ch.elexis.core.model,
  ch.elexis.core.model.issue,

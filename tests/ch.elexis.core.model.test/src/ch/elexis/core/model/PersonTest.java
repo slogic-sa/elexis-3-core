@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import ch.elexis.core.services.IQuery;
 import ch.elexis.core.services.IQuery.COMPARATOR;
+import ch.elexis.core.services.holder.CoreModelServiceHolder;
 import ch.elexis.core.test.AbstractTest;
 
 public class PersonTest extends AbstractTest {
@@ -33,7 +34,7 @@ public class PersonTest extends AbstractTest {
 		super.after();
 	}
 
-	@Test
+
 	public void modifyPerson() {
 		person.setMaritalStatus(MaritalStatus.MARRIED);
 		coreModelService.save(person);
@@ -51,7 +52,6 @@ public class PersonTest extends AbstractTest {
 		coreModelService.delete(person);
 	}
 
-	@Test
 	public void searchPersonByBirthDate() {
 		IQuery<IPerson> query = coreModelService.getQuery(IPerson.class);
 		Date theBirthDate = new GregorianCalendar(2016, 8, 1).getTime();
@@ -60,6 +60,18 @@ public class PersonTest extends AbstractTest {
 		query.and(ModelPackage.Literals.IPERSON__DATE_OF_BIRTH, COMPARATOR.EQUALS, localDate);
 		List<IPerson> execute = query.execute();
 		assertEquals(1, execute.size());
+	}
+	
+	@Test
+	public void updateLongStringAsDDL() {
+		person.setZip("123456");
+		coreModelService.save(person);
+		assertEquals("123456", person.getZip());
+
+		person.setZip("1234567");
+		coreModelService.save(person);
+		CoreModelServiceHolder.get().refresh(person, true);
+		assertEquals("1234567", person.getZip());
 	}
 
 }

@@ -30,7 +30,7 @@ public class RocketchatPartChromium {
 		} else {
 			//		browser.setCookie(value, url)
 			// login cookies?!
-			browser.setUrl(elexisEnvironmentService.getRocketchatBaseUrl());
+			browser.setUrl(elexisEnvironmentService.getBaseUrl() + "/home?resumeToken=" + elexisEnvironmentService.getProperty("eenvauth"));
 		}
 		
 	}

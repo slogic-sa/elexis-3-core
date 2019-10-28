@@ -15,22 +15,38 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.security.auth.login.LoginException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import ch.elexis.core.constants.StringConstants;
 import ch.elexis.core.data.activator.CoreHub;
 import ch.elexis.core.data.events.ElexisEvent;
 import ch.elexis.core.data.events.ElexisEventDispatcher;
 import ch.elexis.core.data.interfaces.events.MessageEvent;
+import ch.elexis.core.data.server.ElexisServerClientConfig;
 import ch.elexis.core.data.server.ElexisServerEventService;
+import ch.elexis.core.data.service.ConfigServiceHolder;
 import ch.elexis.core.data.service.LocalLockServiceHolder;
 import ch.elexis.core.data.service.internal.LocalLockService;
+import ch.elexis.core.eenv.IElexisEnvironmentService;
 import ch.elexis.core.jdt.NonNull;
 import ch.elexis.core.model.RoleConstants;
+import ch.elexis.core.utils.OsgiServiceUtil;
 import ch.rgw.io.SqlSettings;
 import ch.rgw.tools.JdbcLink;
 import ch.rgw.tools.StringTool;
@@ -245,9 +261,41 @@ public class Anwender extends Person {
 			return false;
 		}
 
-		// check if password is valid
-		boolean result = user.verifyPassword(password);
-		if (!result) {
+		boolean loginResult = false;
+		// elexis environment login
+		Optional<IElexisEnvironmentService> ees =
+			OsgiServiceUtil.getService(IElexisEnvironmentService.class);
+		if (ees.isPresent()) {
+			try {
+				JsonObject requestBody = new JsonObject();
+				requestBody.addProperty("user", username);
+				requestBody.addProperty("password", password);
+				
+				Client client = ClientBuilder.newClient(new ElexisServerClientConfig());
+				WebTarget loginTarget = client.target(ees.get().getBaseUrl() + "/api/v1/login");
+				Response response =
+					loginTarget.request(MediaType.APPLICATION_JSON).post(Entity.json(requestBody));
+				
+				if (response.getStatus() == 200) {
+					String json = response.readEntity(String.class);
+					JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
+					if ("success".equals(jsonObject.get("status").getAsString())) {
+						JsonObject respData = jsonObject.get("data").getAsJsonObject();
+						String authToken = respData.get("authToken").getAsString();
+						ConfigServiceHolder.get().set("eenvauth", authToken);//@TODO should be local ?
+						loginResult = authToken != null;
+					}
+				}
+			} catch (Exception e) {
+				LoggerFactory.getLogger(Anwender.class)
+					.warn("elexis environment authentication failed", e);
+			}
+		}
+		// elexis local login
+		if (!loginResult && user.verifyPassword(password)) {
+			loginResult = true;
+		}
+		if (!loginResult) {
 			return false;
 		}
 
